@@ -1,0 +1,32 @@
+import Link from "next/link";
+
+export function SiteHeader() {
+  return (
+    <header>
+      <div className="wrap nav">
+        <Link className="brand" href="/">
+          <div className="seal">义</div>
+          <div>
+            <b>YIWU INDEX</b>
+            <small>Sourcing intelligence</small>
+          </div>
+        </Link>
+
+        <nav className="navlinks">
+          <Link href="/">Accueil</Link>
+          <Link href="/fournisseurs">Fournisseurs</Link>
+          <Link href="/academie">Académie</Link>
+          <Link href="/outils">Outils</Link>
+          <Link href="/transport">Transport</Link>
+          <Link href="/tarifs">Tarifs</Link>
+          <Link href="/faq">FAQ</Link>
+        </nav>
+
+        <div className="navactions">
+          <Link className="btn ghost" href="/login">Connexion</Link>
+          <Link className="btn primary" href="/tarifs">Devenir Premium</Link>
+        </div>
+      </div>
+    </header>
+  );
+}
