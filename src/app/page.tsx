@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HeroPreview, Teaser } from "@/components/site/HomeIslands";
 
 export default function Home() {
@@ -9,8 +10,8 @@ export default function Home() {
           <h1 className="serif">Importez depuis Yiwu <em>sans perdre d&apos;argent.</em></h1>
           <p className="lead">Accédez aux meilleurs fournisseurs vérifiés, à leurs coordonnées directes et à notre guide complet d&apos;importation — pensé pour les entrepreneurs francophones.</p>
           <div className="cta-row">
-            <button className="btn primary lg" data-go="suppliers">Voir les fournisseurs</button>
-            <button className="btn ghost lg" data-go="pricing">Devenir Premium</button>
+            <Link className="btn primary lg" href="/fournisseurs">Voir les fournisseurs</Link>
+            <Link className="btn ghost lg" href="/tarifs">Devenir Premium</Link>
           </div>
           <div className="stats">
             <div className="stat"><b>1&nbsp;540</b><span>Fournisseurs</span></div>
@@ -63,7 +64,7 @@ export default function Home() {
         <div style={{ background: "var(--ink)", borderRadius: 22, padding: 46, textAlign: "center", color: "#fff" }}>
           <h2 className="serif" style={{ fontSize: 30, color: "#fff", marginBottom: 10 }}>Prêt à sourcer sereinement ?</h2>
           <p style={{ color: "#cfcabf", maxWidth: "50ch", margin: "0 auto 22px" }}>Débloquez les 1&nbsp;500+ fournisseurs, leurs coordonnées directes et l&apos;académie complète.</p>
-          <button className="btn gold lg" data-go="pricing">Voir les tarifs</button>
+          <Link className="btn gold lg" href="/tarifs">Voir les tarifs</Link>
         </div>
       </div>
     </section>
