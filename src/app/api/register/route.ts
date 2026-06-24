@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { Emails } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -32,9 +31,6 @@ export async function POST(req: Request) {
   await prisma.user.create({
     data: { email, name: name || null, passwordHash, role: "free" }
   });
-
-  // Welcome email (non-blocking, no-op without RESEND_API_KEY).
-  try { await Emails.welcome(email, name); } catch {}
 
   // No auto-login here: the client signs in right after, through Auth.js.
   return NextResponse.json({ ok: true }, { status: 201 });

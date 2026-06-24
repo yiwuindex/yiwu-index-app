@@ -4,7 +4,6 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { Emails } from "@/lib/email";
 
 const creds = z.object({ email: z.string().email(), password: z.string().min(8) });
 
@@ -43,15 +42,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         (session.user as any).premiumUntil = (token as any).premiumUntil ?? null;
       }
       return session;
-    }
-  },
-  events: {
-    // Security notification: email the user on every sign-in. Non-blocking —
-    // Emails.* is a no-op when RESEND_API_KEY is unset, and errors are swallowed.
-    async signIn({ user }) {
-      if (!user?.email) return;
-      const when = new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" });
-      try { await Emails.signInAlert(user.email, when); } catch {}
     }
   }
 });
