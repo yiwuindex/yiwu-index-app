@@ -53,9 +53,10 @@ export default function FournisseursPage() {
     if (query.trim()) params.set("q", query.trim());
     if (cat) params.set("category", cat);
     try {
-      const r = await fetch(`/api/suppliers?${params.toString()}`);
+      const r = await fetch(`/api/suppliers?${params.toString()}`, { cache: "no-store" });
+      if (!r.ok) throw new Error("http_" + r.status);
       const j = await r.json();
-      const next: SupplierListItem[] = j.items || [];
+      const next: SupplierListItem[] = Array.isArray(j.items) ? j.items : [];
       setTotal(j.total || 0);
       setItems((prev) => (reset ? next : [...prev, ...next]));
     } catch {

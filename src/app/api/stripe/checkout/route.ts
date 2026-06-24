@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       mode: cfg.mode,
       customer: user.stripeCustomerId!,
       line_items: [{ price: cfg.priceId, quantity: 1 }],
-      success_url: `${site}/account?paid=1`,
+      success_url: `${site}/account?paid=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${site}/tarifs?canceled=1`,
       metadata: { userId, plan },
       ...(cfg.mode === "subscription" ? { subscription_data: { metadata: { userId, plan } } } : {})
