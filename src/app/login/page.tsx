@@ -10,6 +10,7 @@ export default function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -20,6 +21,12 @@ export default function Login() {
     setMessage("");
 
     try {
+      if (mode === "signup" && password !== confirmPassword) {
+        setMessage("Les mots de passe ne correspondent pas.");
+        setLoading(false);
+        return;
+      }
+
       if (mode === "signup") {
         const r = await fetch("/api/register", {
           method: "POST",
@@ -65,6 +72,9 @@ export default function Login() {
       <p className="lead" style={{ marginBottom: 24 }}>
         Connectez-vous pour acheter un accès Premium, Pro ou Lifetime et débloquer vos fournisseurs.
       </p>
+      {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reset") === "1" && (
+        <p style={{ color: "var(--jade)", fontSize: 13, marginTop: -12, marginBottom: 18 }}>Mot de passe modifié. Vous pouvez vous connecter.</p>
+      )}
 
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14, background: "var(--surface)", border: "1px solid var(--line)", padding: 24, borderRadius: 16 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -103,11 +113,29 @@ export default function Login() {
           </button>
         </div>
 
+        {mode === "signup" && (
+          <input
+            type={showPw ? "text" : "password"}
+            required
+            minLength={8}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirmer le mot de passe"
+            style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }}
+          />
+        )}
+
         {message && <p style={{ color: "var(--seal)", fontSize: 13, margin: 0 }}>{message}</p>}
 
         <button type="submit" className="btn primary lg" disabled={loading}>
           {loading ? "Chargement…" : mode === "signup" ? "Créer mon compte" : "Me connecter"}
         </button>
+
+        {mode === "login" && (
+          <a href="/mot-de-passe-oublie" style={{ fontSize: 13, fontWeight: 700, color: "var(--seal)", textAlign: "center" }}>
+            Mot de passe oublié ?
+          </a>
+        )}
       </form>
     </main>
   );

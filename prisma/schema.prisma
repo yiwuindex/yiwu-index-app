@@ -23,6 +23,9 @@ model User {
   role             Role              @default(free)
   premiumUntil     DateTime?
   stripeCustomerId String?           @unique
+  emailVerifiedAt  DateTime?
+  passwordResetToken String?          @unique
+  passwordResetExpires DateTime?
   accounts         Account[]
   sessions         Session[]
   subscription     Subscription?
