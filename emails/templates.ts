@@ -21,6 +21,10 @@ export const welcome = (name?: string) => shell("Bienvenue" + (name ? `, ${name}
 export const paymentConfirmed = (plan: string) => shell("Paiement confirmé",
   `<p>Votre accès <b>${plan}</b> est actif. Les coordonnées directes des fournisseurs sont désormais débloquées.</p>${btn(site + "/account", "Voir les fournisseurs")}`);
 export const subscriptionCancelled = () => shell("Abonnement annulé",
-  `<p>Votre abonnement a bien été annulé. Vous gardez l'accès jusqu'à la fin de la période en cours.</p>${btn(site + "/pricing", "Réactiver")}`);
+  `<p>Votre abonnement a bien été annulé. Vous gardez l'accès jusqu'à la fin de la période en cours.</p>${btn(site + "/tarifs", "Réactiver")}`);
 export const paymentFailed = () => shell("Échec de paiement",
   `<p>Le dernier paiement n'a pas pu être traité. Mettez à jour votre moyen de paiement pour conserver votre accès.</p>${btn(site + "/account", "Mettre à jour")}`);
+export const signInAlert = (when: string) => shell("Nouvelle connexion à votre compte",
+  `<p>Une connexion à votre compte Yiwu Index vient d'avoir lieu&nbsp;:</p>
+   <p style="background:#f5f3ee;border:1px solid #e7e2d8;border-radius:10px;padding:12px 14px;font-size:14px"><b>${when}</b></p>
+   <p style="font-size:13px;color:#666b73">Si c'était bien vous, aucune action n'est nécessaire. Si vous ne reconnaissez pas cette connexion, changez votre mot de passe sans attendre et contactez-nous.</p>${btn(site + "/account", "Voir mon compte")}`);
