@@ -10,9 +10,11 @@ export function AccountActions({ hasCustomer }: { hasCustomer: boolean }) {
     setLoading(true);
     try {
       const r = await fetch("/api/stripe/portal", { method: "POST" });
-      const j = await r.json();
-      if (j.url) window.location.href = j.url;
-      else alert("Portail abonnement indisponible pour ce compte.");
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.url) window.location.href = j.url;
+      else alert("Le portail d'abonnement est momentanément indisponible. Réessayez plus tard.");
+    } catch {
+      alert("Connexion impossible. Vérifiez votre réseau.");
     } finally {
       setLoading(false);
     }

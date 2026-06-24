@@ -46,7 +46,10 @@ export default function Login() {
         return;
       }
 
-      const next = new URLSearchParams(window.location.search).get("next") || "/account";
+      // After login go to the homepage by default. An explicit ?next= (set by the
+      // checkout button or the /account guard) is still honored, if it's internal.
+      const raw = new URLSearchParams(window.location.search).get("next");
+      const next = raw && raw.startsWith("/") ? raw : "/";
       router.push(next);
       router.refresh();
     } catch {

@@ -23,15 +23,19 @@ export async function POST(req: Request) {
   const email = parsed.data.email.toLowerCase().trim();
   const { password, name } = parsed.data;
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return NextResponse.json({ error: "Un compte existe déjà avec cet email." }, { status: 409 });
+  try {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return NextResponse.json({ error: "Un compte existe déjà avec cet email." }, { status: 409 });
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    await prisma.user.create({
+      data: { email, name: name || null, passwordHash, role: "free" }
+    });
+  } catch (e) {
+    console.error("[register] error", e);
+    return NextResponse.json({ error: "Inscription impossible pour le moment. Réessayez." }, { status: 500 });
   }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.user.create({
-    data: { email, name: name || null, passwordHash, role: "free" }
-  });
 
   // Welcome email (non-blocking, no-op without RESEND_API_KEY).
   try { await Emails.welcome(email, name); } catch {}
