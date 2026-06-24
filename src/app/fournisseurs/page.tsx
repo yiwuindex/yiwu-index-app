@@ -1,15 +1,16 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { tintOf } from "@/lib/format";
-import { SupplierCard, type SupplierListItem } from "@/components/site/cards";
+import { SupplierCard, type SupplierListItem, type SupplierContacts } from "@/components/site/cards";
 import { SupplierDrawer } from "@/components/site/SupplierDrawer";
-import { PREVIEW_EVENT, getPreview } from "@/lib/preview";
 
 const CATS = [
   "Accessories","Adult","Apparel & Shoes","Auto","Bags & Luggage","Beauty","Electronics",
   "General Goods","Home & Living","Pet Supplies","Sports & Outdoor","Stationery","Tools & Hardware","Toys"
 ];
 const PAGE = 48;
+
+type Account = { isPaid: boolean; unlimited: boolean; remaining: number | null; limit: number | null };
 
 export default function FournisseursPage() {
   const [items, setItems] = useState<SupplierListItem[]>([]);
@@ -19,21 +20,17 @@ export default function FournisseursPage() {
   const [sort, setSort] = useState<"pertinence" | "cat">("pertinence");
   const [favOnly, setFavOnly] = useState(false);
   const [fav, setFav] = useState<Set<string>>(new Set());
-  const [preview, setPreview] = useState(false);
+  const [account, setAccount] = useState<Account>({ isPaid: false, unlimited: false, remaining: null, limit: null });
+  const [unlocking, setUnlocking] = useState<Set<string>>(new Set());
   const [detail, setDetail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const qDebounce = useRef<ReturnType<typeof setTimeout>>();
 
-  // favorites + preview state (client-only)
   useEffect(() => {
     try {
       const f = JSON.parse(localStorage.getItem("yiwu_fav") || "[]");
       if (Array.isArray(f)) setFav(new Set(f));
     } catch {}
-    setPreview(getPreview());
-    const onPrev = (e: Event) => setPreview(!!(e as CustomEvent).detail);
-    window.addEventListener(PREVIEW_EVENT, onPrev);
-    return () => window.removeEventListener(PREVIEW_EVENT, onPrev);
   }, []);
 
   const saveFav = (next: Set<string>) => {
@@ -53,10 +50,11 @@ export default function FournisseursPage() {
     if (query.trim()) params.set("q", query.trim());
     if (cat) params.set("category", cat);
     try {
-      const r = await fetch(`/api/suppliers?${params.toString()}`);
+      const r = await fetch(`/api/suppliers?${params.toString()}`, { cache: "no-store" });
       const j = await r.json();
       const next: SupplierListItem[] = j.items || [];
       setTotal(j.total || 0);
+      if (j.account) setAccount(j.account);
       setItems((prev) => (reset ? next : [...prev, ...next]));
     } catch {
       if (reset) { setItems([]); setTotal(0); }
@@ -65,20 +63,50 @@ export default function FournisseursPage() {
     }
   }, [items.length, query, cat]);
 
-  // reset + reload whenever query/category changes
   useEffect(() => { load(true); /* eslint-disable-next-line */ }, [query, cat]);
+
+  // One-click unlock straight from a card (paid users). Reveals contacts inline.
+  const onUnlock = async (code: string) => {
+    if (unlocking.has(code)) return;
+    setUnlocking((s) => new Set(s).add(code));
+    try {
+      const r = await fetch(`/api/suppliers/${encodeURIComponent(code)}/unlock`, { method: "POST" });
+      if (r.status === 401) { window.location.href = "/login?next=/fournisseurs"; return; }
+      if (r.status === 403) { window.location.href = "/tarifs"; return; }
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 402) {
+        setAccount((a) => ({ ...a, remaining: 0 }));
+        alert("Vous avez atteint votre quota de déblocages ce mois-ci. Passez à l'offre supérieure pour en débloquer davantage.");
+        return;
+      }
+      if (r.ok && j.contacts) {
+        setItems((prev) => prev.map((it) => (it.code === code ? { ...it, unlocked: true, contacts: j.contacts } : it)));
+        if (typeof j.remaining === "number") setAccount((a) => ({ ...a, remaining: j.remaining }));
+      }
+    } catch {
+      alert("Déblocage impossible. Vérifiez votre connexion.");
+    } finally {
+      setUnlocking((s) => { const n = new Set(s); n.delete(code); return n; });
+    }
+  };
+
+  // Keep cards in sync when a supplier is unlocked from inside the detail drawer.
+  const onDrawerUnlocked = (code: string, contacts?: SupplierContacts) => {
+    setItems((prev) => prev.map((it) => (it.code === code ? { ...it, unlocked: true, contacts: contacts ?? it.contacts } : it)));
+    setAccount((a) => (a.remaining !== null && a.remaining > 0 ? { ...a, remaining: a.remaining - 1 } : a));
+  };
 
   const onSearch = (v: string) => {
     clearTimeout(qDebounce.current);
     qDebounce.current = setTimeout(() => setQuery(v), 140);
   };
 
-  // client-side view transforms (sort + favourites filter) over loaded items
   let view = items;
   if (favOnly) view = view.filter((d) => fav.has(d.code));
   if (sort === "cat") view = [...view].sort((a, b) => a.category.localeCompare(b.category) || a.code.localeCompare(b.code));
 
   const canLoadMore = !favOnly && items.length < total;
+  const remainingForCard = account.unlimited ? null : account.remaining;
 
   return (
     <section>
@@ -95,8 +123,17 @@ export default function FournisseursPage() {
           <div className="tpill r"><div className="ic">🗂️</div><div><b>{CATS.length} catégories</b><span>Classé et recherchable</span></div></div>
         </div>
 
+        {account.isPaid && !account.unlimited && account.remaining !== null && (
+          <div style={{ margin: "4px 0 0", fontSize: 13, color: "var(--slate)" }}>
+            Membre <b style={{ color: "var(--jade)" }}>actif</b> — il vous reste <b>{account.remaining}</b> déblocage{account.remaining > 1 ? "s" : ""} ce mois-ci.
+          </div>
+        )}
+        {account.unlimited && (
+          <div style={{ margin: "4px 0 0", fontSize: 13, color: "var(--jade)", fontWeight: 600 }}>Accès illimité actif — toutes les coordonnées sont visibles.</div>
+        )}
+
         <div className="chips" id="chips">
-          <button className={"chip all" + (cat === "" ? "" : "")} aria-pressed={cat === ""} onClick={() => setCat("")}
+          <button className="chip all" aria-pressed={cat === ""} onClick={() => setCat("")}
             style={cat === "" ? { background: "var(--ink)", color: "#fff", borderColor: "transparent" } : undefined}>
             Tout
           </button>
@@ -146,7 +183,11 @@ export default function FournisseursPage() {
             </p>
           ) : (
             view.map((d) => (
-              <SupplierCard key={d.code} d={d} faved={fav.has(d.code)} preview={preview} onFav={toggleFav} onDetail={setDetail} />
+              <SupplierCard
+                key={d.code} d={d} faved={fav.has(d.code)}
+                isPaid={account.isPaid} remaining={remainingForCard} unlocking={unlocking.has(d.code)}
+                onFav={toggleFav} onDetail={setDetail} onUnlock={onUnlock}
+              />
             ))
           )}
         </div>
@@ -157,7 +198,7 @@ export default function FournisseursPage() {
         )}
       </div>
 
-      <SupplierDrawer code={detail} onClose={() => setDetail(null)} />
+      <SupplierDrawer code={detail} onClose={() => setDetail(null)} onUnlocked={onDrawerUnlocked} />
     </section>
   );
 }

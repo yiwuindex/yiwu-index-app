@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { monogram, tintOf, glyphOf } from "@/lib/format";
+import type { SupplierContacts } from "@/components/site/cards";
 
 type Detail = {
   code: string; name: string; category: string; products?: string;
@@ -60,7 +61,7 @@ function LockedContacts({ ch }: { ch?: Detail["channels"] }) {
   );
 }
 
-export function SupplierDrawer({ code, onClose }: { code: string | null; onClose: () => void }) {
+export function SupplierDrawer({ code, onClose, onUnlocked }: { code: string | null; onClose: () => void; onUnlocked?: (code: string, contacts?: SupplierContacts) => void }) {
   const [d, setD] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
@@ -104,6 +105,7 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
       if (r.status === 403) { router.push("/tarifs"); return; }
       if (r.status === 402) { setError(`Limite mensuelle atteinte (${j.used}/${j.limit}). Passez au plan supérieur.`); return; }
       if (!r.ok) { setError("Impossible de débloquer cette fiche."); return; }
+      onUnlocked?.(d.code, j.contacts as SupplierContacts | undefined);
       const res = await fetch(`/api/suppliers/${encodeURIComponent(d.code)}`);
       if (res.ok) {
         const refreshed = await res.json();

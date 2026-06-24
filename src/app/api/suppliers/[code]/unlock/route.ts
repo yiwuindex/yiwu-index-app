@@ -18,18 +18,19 @@ export async function POST(_req: Request, { params }: { params: { code: string }
     if (!user?.id) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
     if (!hasActivePaidAccess(user)) return NextResponse.json({ error: "upgrade_required" }, { status: 403 });
 
-    const supplier = await prisma.supplier.findUnique({ where: { code: params.code }, select: { code: true } });
+    const supplier = await prisma.supplier.findUnique({ where: { code: params.code }, select: { code: true, wechat: true, email: true, tel: true, location: true } });
     if (!supplier) return NextResponse.json({ error: "not_found" }, { status: 404 });
+    const contacts = { wechat: supplier.wechat, email: supplier.email, tel: supplier.tel, location: supplier.location };
 
     const existing = await prisma.supplierUnlock.findUnique({ where: { userId_supplierCode: { userId: user.id, supplierCode: supplier.code } } });
-    if (existing || isUnlimited(user.role)) return NextResponse.json({ ok: true, alreadyUnlocked: true });
+    if (existing || isUnlimited(user.role)) return NextResponse.json({ ok: true, alreadyUnlocked: true, contacts });
 
     const limit = unlockLimit(user.role);
     const used = await prisma.supplierUnlock.count({ where: { userId: user.id, createdAt: { gte: monthStart() } } });
     if (used >= limit) return NextResponse.json({ error: "limit_reached", used, limit }, { status: 402 });
 
     await prisma.supplierUnlock.create({ data: { userId: user.id, supplierCode: supplier.code } });
-    return NextResponse.json({ ok: true, used: used + 1, limit, remaining: Math.max(limit - used - 1, 0) });
+    return NextResponse.json({ ok: true, used: used + 1, limit, remaining: Math.max(limit - used - 1, 0), contacts });
   } catch (e) {
     console.error("[unlock] error", e);
     return NextResponse.json({ error: "server_error" }, { status: 500 });
