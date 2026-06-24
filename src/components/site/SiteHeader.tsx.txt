@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 
 export function SiteHeader() {
-  const userId = cookies().get("yiwu_user_id")?.value;
-  const isLoggedIn = !!userId;
-
   return (
     <header>
       <div className="wrap nav">
@@ -27,19 +23,8 @@ export function SiteHeader() {
         </nav>
 
         <div className="navactions">
-          {isLoggedIn ? (
-            <Link className="btn ghost" href="/account">
-              Mon compte
-            </Link>
-          ) : (
-            <Link className="btn ghost" href="/login">
-              Connexion
-            </Link>
-          )}
-
-          <Link className="btn primary" href="/tarifs">
-            Devenir Premium
-          </Link>
+          <Link className="btn ghost" href="/login">Connexion</Link>
+          <Link className="btn primary" href="/tarifs">Devenir Premium</Link>
         </div>
       </div>
     </header>

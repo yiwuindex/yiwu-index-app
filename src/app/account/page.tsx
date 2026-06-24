@@ -27,6 +27,7 @@ export default async function Account() {
       <p className="eyebrow">Espace membre</p>
       <h1 className="serif" style={{ fontSize: 34, marginBottom: 8 }}>Mon compte</h1>
       <div className="panelbox" style={{ marginTop: 20 }}>
+        <p><b>Nom :</b> {user.name || "Non renseigné"}</p>
         <p><b>Email :</b> {user.email}</p>
         <p><b>Statut :</b> {user.role}</p>
         <p><b>Déblocages ce mois-ci :</b> {unlimited ? "Illimité" : `${used} / ${limit}`}</p>

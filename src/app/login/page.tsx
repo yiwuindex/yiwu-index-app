@@ -45,7 +45,8 @@ export default function Login() {
         return;
       }
 
-      router.push("/tarifs");
+      const next = new URLSearchParams(window.location.search).get("next") || "/account";
+      router.push(next);
       router.refresh();
     } catch {
       setMessage("Erreur réseau. Réessayez.");
