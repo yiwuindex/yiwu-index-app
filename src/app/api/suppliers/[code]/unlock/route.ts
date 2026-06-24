@@ -3,6 +3,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasActivePaidAccess, isUnlimited, unlockLimit } from "@/lib/roles";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 function monthStart() {
   const d = new Date();
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));

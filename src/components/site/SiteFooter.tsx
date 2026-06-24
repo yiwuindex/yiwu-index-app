@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LEGAL } from "@/lib/legal";
 
 const legal: [string, string][] = [
   ["Mentions légales", "/mentions-legales"], ["CGV", "/cgv"],
@@ -24,7 +25,7 @@ export function SiteFooter() {
           Les données proviennent d'une liste fournisseurs à usage privé. « Vérifié » indique qu'un stand a été
           localisé au marché de Yiwu, ce n'est pas une garantie de qualité produit. Les coordonnées directes
           sont servies côté serveur et réservées aux membres — jamais exposées au navigateur.
-          © {new Date().getFullYear()} Yiwu Index — [RAISON SOCIALE].
+          © {new Date().getFullYear()} {LEGAL.companyName} — {LEGAL.legalName}.
         </small>
       </div>
     </footer>
