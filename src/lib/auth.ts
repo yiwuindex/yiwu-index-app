@@ -1,18 +1,20 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { Emails } from "@/lib/email";
+import authConfig from "@/auth.config";
 
 const creds = z.object({ email: z.string().email(), password: z.string().min(8) });
 
+// Full config for the Node runtime (API routes + server components).
+// Inherits the edge-safe base (pages, session, authorized) and adds the
+// Prisma-backed provider, fresh-role callbacks, and the sign-in email event.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  // Credentials + JWT. We deliberately do not use PrismaAdapter here:
-  // users are created by /api/register and the JWT is refreshed from Prisma.
-  session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
-  trustHost: true,
+  ...authConfig,
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
@@ -25,39 +27,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user?.passwordHash) return null;
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
-
-        // Non bloquant : si Resend n'est pas configuré, l'envoi est ignoré.
-        await Emails.loginNotice(user.email, user.name ?? undefined);
-
         return { id: user.id, email: user.email, name: user.name ?? undefined };
       }
     })
   ],
   callbacks: {
+    ...authConfig.callbacks,
+    // keep role + premiumUntil fresh on the token (re-read from DB each pass)
     async jwt({ token }) {
       if (token.sub) {
-        const u = await prisma.user.findUnique({
-          where: { id: token.sub },
-          select: { id: true, email: true, name: true, role: true, premiumUntil: true },
-        });
-        if (u) {
-          token.email = u.email;
-          token.name = u.name ?? token.email;
-          (token as any).role = u.role;
-          (token as any).premiumUntil = u.premiumUntil?.toISOString() ?? null;
-        }
+        const u = await prisma.user.findUnique({ where: { id: token.sub } });
+        if (u) { token.role = u.role; token.premiumUntil = u.premiumUntil?.toISOString() ?? null; }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.sub;
-        session.user.email = token.email ?? session.user.email;
-        session.user.name = token.name ?? session.user.email ?? "Membre Yiwu Index";
         (session.user as any).role = (token as any).role ?? "free";
         (session.user as any).premiumUntil = (token as any).premiumUntil ?? null;
       }
       return session;
+    }
+  },
+  events: {
+    // Security notification: email the user on every sign-in. Non-blocking —
+    // Emails.* is a no-op when RESEND_API_KEY is unset, and errors are swallowed.
+    async signIn({ user }) {
+      if (!user?.email) return;
+      const when = new Date().toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/Paris" });
+      try { await Emails.signInAlert(user.email, when); } catch {}
     }
   }
 });
