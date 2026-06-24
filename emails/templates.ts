@@ -18,13 +18,12 @@ const site = process.env.NEXT_PUBLIC_SITE_URL || "#";
 
 export const welcome = (name?: string) => shell("Bienvenue" + (name ? `, ${name}` : ""),
   `<p>Votre compte Yiwu Index est créé. Accédez à la base de 1 540 fournisseurs vérifiés et à l'académie d'importation.</p>${btn(site + "/account", "Accéder à mon compte")}`);
+export const loginNotice = (name?: string) => shell("Nouvelle connexion à votre compte",
+  `<p>Bonjour${name ? ` ${name}` : ""}, une connexion vient d'être effectuée sur votre compte Yiwu Index.</p><p style="color:#9a9189;font-size:13px">Si c'était vous, aucune action n'est nécessaire. Sinon, changez votre mot de passe dès que possible.</p>${btn(site + "/account", "Voir mon compte")}`);
+
 export const paymentConfirmed = (plan: string) => shell("Paiement confirmé",
   `<p>Votre accès <b>${plan}</b> est actif. Les coordonnées directes des fournisseurs sont désormais débloquées.</p>${btn(site + "/account", "Voir les fournisseurs")}`);
 export const subscriptionCancelled = () => shell("Abonnement annulé",
-  `<p>Votre abonnement a bien été annulé. Vous gardez l'accès jusqu'à la fin de la période en cours.</p>${btn(site + "/tarifs", "Réactiver")}`);
+  `<p>Votre abonnement a bien été annulé. Vous gardez l'accès jusqu'à la fin de la période en cours.</p>${btn(site + "/pricing", "Réactiver")}`);
 export const paymentFailed = () => shell("Échec de paiement",
   `<p>Le dernier paiement n'a pas pu être traité. Mettez à jour votre moyen de paiement pour conserver votre accès.</p>${btn(site + "/account", "Mettre à jour")}`);
-export const signInAlert = (when: string) => shell("Nouvelle connexion à votre compte",
-  `<p>Une connexion à votre compte Yiwu Index vient d'avoir lieu&nbsp;:</p>
-   <p style="background:#f5f3ee;border:1px solid #e7e2d8;border-radius:10px;padding:12px 14px;font-size:14px"><b>${when}</b></p>
-   <p style="font-size:13px;color:#666b73">Si c'était bien vous, aucune action n'est nécessaire. Si vous ne reconnaissez pas cette connexion, changez votre mot de passe sans attendre et contactez-nous.</p>${btn(site + "/account", "Voir mon compte")}`);

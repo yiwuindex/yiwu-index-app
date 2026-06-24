@@ -33,8 +33,7 @@ export async function POST(req: Request) {
     data: { email, name: name || null, passwordHash, role: "free" }
   });
 
-  // Welcome email (non-blocking, no-op without RESEND_API_KEY).
-  try { await Emails.welcome(email, name); } catch {}
+  await Emails.welcome(email, name || undefined);
 
   // No auto-login here: the client signs in right after, through Auth.js.
   return NextResponse.json({ ok: true }, { status: 201 });

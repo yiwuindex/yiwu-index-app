@@ -1,30 +1,68 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+function passwordScore(password: string) {
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  return score;
+}
+
+function scoreLabel(score: number) {
+  if (score <= 1) return "Faible";
+  if (score === 2) return "Correct";
+  if (score === 3) return "Bon";
+  return "Très bon";
+}
 
 export default function Login() {
   const router = useRouter();
+  const params = useSearchParams();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPw, setShowPw] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const score = useMemo(() => passwordScore(password), [password]);
+  const next = params.get("next") || "/account";
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
+    const cleanEmail = email.toLowerCase().trim();
+    if (!cleanEmail || !password) {
+      setMessage("Renseignez votre email et votre mot de passe.");
+      setLoading(false);
+      return;
+    }
+    if (password.length < 8) {
+      setMessage("Le mot de passe doit contenir au moins 8 caractères.");
+      setLoading(false);
+      return;
+    }
+    if (mode === "signup" && password !== confirmPassword) {
+      setMessage("Les deux mots de passe ne correspondent pas.");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (mode === "signup") {
         const r = await fetch("/api/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, name }),
+          body: JSON.stringify({ email: cleanEmail, password, name: name.trim() }),
         });
         const j = await r.json().catch(() => ({}));
         if (!r.ok) {
@@ -35,7 +73,7 @@ export default function Login() {
       }
 
       const res = await signIn("credentials", {
-        email,
+        email: cleanEmail,
         password,
         redirect: false,
       });
@@ -46,66 +84,96 @@ export default function Login() {
         return;
       }
 
-      const next = new URLSearchParams(window.location.search).get("next") || "/account";
       router.push(next);
       router.refresh();
     } catch {
-      setMessage("Erreur réseau. Réessayez.");
+      setMessage("Erreur réseau. Réessayez dans quelques secondes.");
       setLoading(false);
     }
   }
 
   return (
-    <main className="wrap" style={{ padding: "60px 22px", maxWidth: 520, margin: "0 auto" }}>
-      <p className="eyebrow">Compte client</p>
-      <h1 className="serif" style={{ fontSize: 34, marginBottom: 8 }}>Connexion / Inscription</h1>
-      <p className="lead" style={{ marginBottom: 24 }}>
-        Connectez-vous pour acheter un accès Premium, Pro ou Lifetime et débloquer vos fournisseurs.
-      </p>
+    <main className="wrap" style={{ padding: "60px 22px", maxWidth: 960, margin: "0 auto" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, alignItems: "center" }} className="auth-grid">
+        <section>
+          <p className="eyebrow">Espace membre</p>
+          <h1 className="serif" style={{ fontSize: 40, marginBottom: 12 }}>Votre accès sourcing, sécurisé.</h1>
+          <p className="lead" style={{ marginBottom: 22 }}>
+            Créez votre compte pour acheter un plan Premium, Pro ou Lifetime, suivre vos déblocages et accéder aux contacts fournisseurs autorisés.
+          </p>
+          <div className="panelbox">
+            <b>Inclus avec votre compte</b>
+            <ul style={{ margin: "10px 0 0", paddingLeft: 18, color: "var(--ink-2)" }}>
+              <li>Session sécurisée et persistante</li>
+              <li>Suivi de votre plan et de vos déblocages</li>
+              <li>Emails automatiques importants</li>
+            </ul>
+          </div>
+        </section>
 
-      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14, background: "var(--surface)", border: "1px solid var(--line)", padding: 24, borderRadius: 16 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <button type="button" className={mode === "login" ? "btn primary" : "btn ghost"} onClick={() => setMode("login")}>Connexion</button>
-          <button type="button" className={mode === "signup" ? "btn primary" : "btn ghost"} onClick={() => setMode("signup")}>Inscription</button>
-        </div>
+        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14, background: "var(--surface)", border: "1px solid var(--line)", padding: 24, borderRadius: 18, boxShadow: "var(--shadow)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <button type="button" className={mode === "login" ? "btn primary" : "btn ghost"} onClick={() => { setMode("login"); setMessage(""); }}>
+              Connexion
+            </button>
+            <button type="button" className={mode === "signup" ? "btn primary" : "btn ghost"} onClick={() => { setMode("signup"); setMessage(""); }}>
+              Inscription
+            </button>
+          </div>
 
-        {mode === "signup" && (
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom (optionnel)" style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }} />
-        )}
+          {mode === "signup" && (
+            <label className="auth-field">
+              <span>Nom complet</span>
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ivan Beuca" autoComplete="name" />
+            </label>
+          )}
 
-        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }} />
-        <div style={{ position: "relative", display: "flex" }}>
-          <input
-            type={showPw ? "text" : "password"}
-            required
-            minLength={8}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mot de passe (8 caractères min.)"
-            style={{ flex: 1, padding: 14, paddingRight: 46, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPw((v) => !v)}
-            aria-label={showPw ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-            aria-pressed={showPw}
-            title={showPw ? "Masquer" : "Afficher"}
-            style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", width: 34, height: 34, display: "grid", placeItems: "center", border: 0, background: "transparent", cursor: "pointer", color: "var(--slate)", borderRadius: 8 }}
-          >
-            {showPw ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" y1="2" x2="22" y2="22" /></svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-            )}
+          <label className="auth-field">
+            <span>Email</span>
+            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vous@email.com" autoComplete="email" />
+          </label>
+
+          <label className="auth-field">
+            <span>Mot de passe</span>
+            <div className="password-wrap">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="8 caractères minimum"
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              />
+              <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}>
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+          </label>
+
+          {mode === "signup" && (
+            <>
+              <label className="auth-field">
+                <span>Confirmer le mot de passe</span>
+                <input type={showPassword ? "text" : "password"} required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Répétez le mot de passe" autoComplete="new-password" />
+              </label>
+              <div className="password-meter" aria-label={`Sécurité du mot de passe : ${scoreLabel(score)}`}>
+                <i style={{ width: `${Math.max(score, 1) * 25}%` }} />
+                <span>{scoreLabel(score)}</span>
+              </div>
+            </>
+          )}
+
+          {message && <p style={{ color: "var(--seal)", fontSize: 13, margin: 0 }}>{message}</p>}
+
+          <button type="submit" className="btn primary lg" disabled={loading}>
+            {loading ? "Sécurisation…" : mode === "signup" ? "Créer mon compte" : "Me connecter"}
           </button>
-        </div>
-
-        {message && <p style={{ color: "var(--seal)", fontSize: 13, margin: 0 }}>{message}</p>}
-
-        <button type="submit" className="btn primary lg" disabled={loading}>
-          {loading ? "Chargement…" : mode === "signup" ? "Créer mon compte" : "Me connecter"}
-        </button>
-      </form>
+          <p className="note" style={{ margin: 0 }}>
+            En continuant, vous acceptez les CGV, la politique de confidentialité et les règles d'utilisation de Yiwu Index.
+          </p>
+        </form>
+      </div>
     </main>
   );
 }
