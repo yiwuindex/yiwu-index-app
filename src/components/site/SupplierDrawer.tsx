@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { monogram, tintOf, glyphOf } from "@/lib/format";
 
 type Detail = {
@@ -9,6 +10,10 @@ type Detail = {
   channels?: { wechat: boolean; email: boolean; tel: boolean; address: boolean };
   contacts?: { wechat: string[]; email: string; tel: string; location: string };
   cta?: string;
+  authenticated?: boolean;
+  alreadyUnlocked?: boolean;
+  remainingUnlocks?: number | null;
+  monthlyLimit?: number | null;
 };
 
 function ProductThumbs({ d }: { d: Detail }) {
@@ -58,6 +63,9 @@ function LockedContacts({ ch }: { ch?: Detail["channels"] }) {
 export function SupplierDrawer({ code, onClose }: { code: string | null; onClose: () => void }) {
   const [d, setD] = useState<Detail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     if (!code) { setD(null); return; }
@@ -76,6 +84,27 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+
+  const unlock = async () => {
+    if (!d) return;
+    if (!d.authenticated) { router.push("/login?next=/fournisseurs"); return; }
+    setUnlocking(true);
+    setError("");
+    try {
+      const r = await fetch(`/api/suppliers/${encodeURIComponent(d.code)}/unlock`, { method: "POST" });
+      const j = await r.json().catch(() => ({}));
+      if (r.status === 403) { router.push("/tarifs"); return; }
+      if (r.status === 402) { setError(`Limite mensuelle atteinte (${j.used}/${j.limit}). Passez au plan supérieur.`); return; }
+      if (!r.ok) { setError("Impossible de débloquer cette fiche."); return; }
+      const refreshed = await fetch(`/api/suppliers/${encodeURIComponent(d.code)}`).then((res) => res.json());
+      setD(refreshed);
+    } catch {
+      setError("Erreur réseau.");
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   const on = !!code;
   return (
@@ -118,7 +147,14 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
                   {d.locked && (
                     <div className="lockover" style={{ borderRadius: 12 }}>
                       <div className="lk">🔒 {d.cta || "Réservé au Premium"}</div>
-                      <button className="btn primary" data-go="pricing" style={{ padding: "6px 14px", fontSize: 12 }}>Débloquer l'accès</button>
+                      {typeof d.remainingUnlocks === "number" && (
+                        <div className="note" style={{ marginTop: -4 }}>{d.remainingUnlocks} déblocage(s) restant(s) ce mois-ci</div>
+                      )}
+                      {error && <div className="note" style={{ color: "var(--seal)", maxWidth: 260 }}>{error}</div>}
+                      <button className="btn primary" onClick={unlock} disabled={unlocking} style={{ padding: "6px 14px", fontSize: 12 }}>
+                        {unlocking ? "Déblocage…" : d.authenticated ? "Débloquer cette fiche" : "Se connecter"}
+                      </button>
+                      {d.authenticated && <button className="btn ghost" onClick={() => router.push("/tarifs")} style={{ padding: "6px 14px", fontSize: 12 }}>Voir les offres</button>}
                     </div>
                   )}
                 </div>

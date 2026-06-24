@@ -1,80 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  async function submit(e: FormEvent) {
     e.preventDefault();
-    alert("Connexion à brancher avec Auth.js");
-  };
+    setLoading(true);
+    setMessage("");
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Inscription à brancher avec Auth.js");
-  };
+    try {
+      if (mode === "signup") {
+        const r = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, name }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) {
+          setMessage(j.error || "Impossible de créer le compte.");
+          setLoading(false);
+          return;
+        }
+      }
+
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setMessage("Email ou mot de passe incorrect.");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/tarifs");
+      router.refresh();
+    } catch {
+      setMessage("Erreur réseau. Réessayez.");
+      setLoading(false);
+    }
+  }
 
   return (
-    <main className="wrap" style={{ padding: "60px 22px", maxWidth: 500, margin: "0 auto" }}>
-      <h1 style={{ marginBottom: 20 }}>Connexion / Inscription</h1>
+    <main className="wrap" style={{ padding: "60px 22px", maxWidth: 520, margin: "0 auto" }}>
+      <p className="eyebrow">Compte client</p>
+      <h1 className="serif" style={{ fontSize: 34, marginBottom: 8 }}>Connexion / Inscription</h1>
+      <p className="lead" style={{ marginBottom: 24 }}>
+        Connectez-vous pour acheter un accès Premium, Pro ou Lifetime et débloquer vos fournisseurs.
+      </p>
 
-      <form
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          background: "#fff",
-          padding: 24,
-          borderRadius: 12,
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-        }}
-      >
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: 14, borderRadius: 8, border: "1px solid #ddd" }}
-        />
+      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14, background: "var(--surface)", border: "1px solid var(--line)", padding: 24, borderRadius: 16 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <button type="button" className={mode === "login" ? "btn primary" : "btn ghost"} onClick={() => setMode("login")}>Connexion</button>
+          <button type="button" className={mode === "signup" ? "btn primary" : "btn ghost"} onClick={() => setMode("signup")}>Inscription</button>
+        </div>
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: 14, borderRadius: 8, border: "1px solid #ddd" }}
-        />
+        {mode === "signup" && (
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom (optionnel)" style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }} />
+        )}
 
-        <button
-          type="button"
-          onClick={handleLogin}
-          style={{
-            padding: 14,
-            background: "#d45745",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-          }}
-        >
-          Se connecter
-        </button>
+        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }} />
+        <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe (8 caractères min.)" style={{ padding: 14, borderRadius: 10, border: "1.5px solid var(--line)", background: "#fff" }} />
 
-        <button
-          type="button"
-          onClick={handleSignup}
-          style={{
-            padding: 14,
-            background: "#111",
-            color: "white",
-            border: "none",
-            borderRadius: 8,
-            cursor: "pointer",
-          }}
-        >
-          S'inscrire
+        {message && <p style={{ color: "var(--seal)", fontSize: 13, margin: 0 }}>{message}</p>}
+
+        <button type="submit" className="btn primary lg" disabled={loading}>
+          {loading ? "Chargement…" : mode === "signup" ? "Créer mon compte" : "Me connecter"}
         </button>
       </form>
     </main>

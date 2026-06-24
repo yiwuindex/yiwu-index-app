@@ -10,23 +10,24 @@ datasource db {
 enum Role {
   free
   premium
+  pro
   lifetime
   vip
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  passwordHash  String?
-  role          Role      @default(free)
-  // when a recurring subscription is active, premium until this date; null for lifetime/vip (permanent) or free
-  premiumUntil  DateTime?
-  stripeCustomerId String? @unique
-  accounts      Account[]
-  sessions      Session[]
-  subscription  Subscription?
-  createdAt     DateTime  @default(now())
+  id               String            @id @default(cuid())
+  email            String            @unique
+  name             String?
+  passwordHash     String?
+  role             Role              @default(free)
+  premiumUntil     DateTime?
+  stripeCustomerId String?           @unique
+  accounts         Account[]
+  sessions         Session[]
+  subscription     Subscription?
+  unlocks          SupplierUnlock[]
+  createdAt        DateTime          @default(now())
 }
 
 model Subscription {
@@ -35,7 +36,7 @@ model Subscription {
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   stripeSubscriptionId String?  @unique
   stripePriceId        String?
-  status               String   // active, canceled, past_due, incomplete, lifetime
+  status               String
   currentPeriodEnd     DateTime?
   cancelAtPeriodEnd    Boolean  @default(false)
   updatedAt            DateTime @updatedAt
@@ -43,7 +44,7 @@ model Subscription {
 
 model Supplier {
   id        String   @id @default(cuid())
-  code      String   @unique          // YW-####
+  code      String   @unique
   name      String
   category  String
   products  String   @default("")
@@ -51,12 +52,24 @@ model Supplier {
   district  String   @default("")
   verified  Boolean  @default(false)
   agent     Boolean  @default(false)
-  // ---- PREMIUM-GATED fields: never sent to non-premium clients ----
   wechat    String[] @default([])
   email     String   @default("")
   tel       String   @default("")
   location  String   @default("")
+
   @@index([category])
+}
+
+model SupplierUnlock {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  supplierCode String
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, supplierCode])
+  @@index([userId, createdAt])
+  @@index([supplierCode])
 }
 
 model Testimonial {
@@ -70,33 +83,36 @@ model Testimonial {
   createdAt    DateTime @default(now())
 }
 
-// ---- Auth.js adapter models ----
 model Account {
-  id String @id @default(cuid())
-  userId String
-  type String
-  provider String
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
   providerAccountId String
-  refresh_token String?
-  access_token String?
-  expires_at Int?
-  token_type String?
-  scope String?
-  id_token String?
-  session_state String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
+
 model Session {
-  id String @id @default(cuid())
-  sessionToken String @unique
-  userId String
-  expires DateTime
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model VerificationToken {
   identifier String
-  token String @unique
-  expires DateTime
+  token      String   @unique
+  expires    DateTime
+
   @@unique([identifier, token])
 }
