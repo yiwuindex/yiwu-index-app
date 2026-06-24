@@ -146,7 +146,7 @@ export default function FournisseursPage() {
             </p>
           ) : (
             view.map((d) => (
-              <SupplierCard key={d.code} d={d} faved={fav.has(d.code)} preview={preview} onFav={toggleFav} onDetail={setDetail} />
+              <SupplierCard key={d.code} d={d} faved={fav.has(d.code)} preview={false} onFav={toggleFav} onDetail={setDetail} />
             ))
           )}
         </div>

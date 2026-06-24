@@ -1,75 +1,98 @@
-# Yiwu Index — version corrigée par ChatGPT
+# Yiwu Index — derniers réglages après ce ZIP
 
 ## Ce qui a été corrigé dans ce ZIP
 
-- Page login remplacée par un vrai formulaire inscription / connexion relié à NextAuth Credentials.
-- API `/api/register` utilisée pour créer un compte avec mot de passe hashé bcrypt.
-- Header + footer globaux remis dans `src/app/layout.tsx`.
-- Stripe Checkout branché pour Premium, Pro et Lifetime.
-- Webhook Stripe mis à jour pour activer `premium`, `pro` ou `lifetime` selon le plan payé.
-- Ajout du rôle `pro` dans Prisma.
-- Ajout d'une table `SupplierUnlock` pour enregistrer les fiches fournisseurs débloquées par utilisateur.
-- Page compte améliorée : email, rôle, déblocages utilisés, abonnement Stripe, déconnexion, portail Stripe.
-- Fiches fournisseurs : contacts cachés tant que la fiche n'est pas débloquée.
-- Premium : 10 déblocages/mois.
-- Pro : 50 déblocages/mois.
-- Lifetime/VIP : illimité.
-- `/pricing` redirige vers `/tarifs`.
+- Suppression du faux bouton/toggle Premium de démonstration dans le header.
+- Le catalogue fournisseurs utilise maintenant Supabase si la base est remplie, sinon il retombe sur `data/suppliers.json` pour éviter l'écran "0 fournisseur".
+- Les contacts restent verrouillés côté front. Le vrai déblocage passe par le rôle utilisateur + Stripe.
+- L'inscription/connexion passent par Auth.js Credentials + `/api/register`.
+- Les pages Stripe sont prévues pour Premium, Pro et Lifetime.
+- Les routes fournisseurs détails/déblocage sont plus robustes si la base n'a pas encore été seed.
 
-## Variables Vercel obligatoires
+## À faire sur ton PC
 
-Dans Vercel > Settings > Environment Variables :
-
-```env
-DATABASE_URL=
-AUTH_SECRET=
-AUTH_URL=https://yiwu-index-app.vercel.app
-NEXT_PUBLIC_SITE_URL=https://yiwu-index-app.vercel.app
-
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_PREMIUM_MONTHLY=price_1TlZbuINSWdh0jWE41MWOTQg
-STRIPE_PRICE_PRO_MONTHLY=price_1TlZcQINSWdh0jWErxCqzHsr
-STRIPE_PRICE_LIFETIME=price_1T1ZfsINSWdh0jWE1FmWwLJM
-```
-
-`RESEND_API_KEY` et `EMAIL_FROM` sont optionnels.
-
-## Très important après remplacement des fichiers
-
-Comme le schéma Prisma a changé, il faut appliquer la base de données :
+Ouvre CMD dans le dossier du projet :
 
 ```bash
 cd Desktop\yiwu-index-app
+```
+
+Puis lance :
+
+```bash
 npm install
 npx prisma generate
 npx prisma db push
-```
-
-Puis :
-
-```bash
+npm run db:seed
 npm run build
 ```
 
-Si le build passe : commit + push GitHub Desktop, Vercel redéploie.
+Si `npm run db:seed` répond que les fournisseurs sont importés, c'est bon.
 
-## Tests à faire
+## À faire avec GitHub Desktop
 
-1. Aller sur `/login`.
-2. Créer un compte avec email + mot de passe de 8 caractères minimum.
-3. Être redirigé vers `/tarifs`.
-4. Cliquer Premium / Pro / Lifetime.
-5. Stripe Checkout doit s'ouvrir.
-6. Payer en mode test avec : `4242 4242 4242 4242`.
-7. Après paiement, aller sur `/account`.
-8. Vérifier que le rôle est devenu `premium`, `pro` ou `lifetime`.
-9. Aller sur `/fournisseurs`.
-10. Ouvrir une fiche et cliquer sur “Débloquer cette fiche”.
+1. Ouvre GitHub Desktop.
+2. Vérifie que les fichiers modifiés apparaissent.
+3. Commit : `final fixes auth suppliers stripe`.
+4. Push origin.
+5. Vercel redéploie automatiquement.
 
-## Limites actuelles
+## Variables Vercel à vérifier
 
-- Le système de déblocage est fonctionnel côté code, mais il faut faire `npx prisma db push` pour créer la table `SupplierUnlock`.
-- Les emails Resend sont optionnels : si `RESEND_API_KEY` manque, le site fonctionne quand même.
-- Le build n'a pas pu être exécuté dans l'environnement ChatGPT car il n'a pas accès à Internet pour télécharger les binaires Prisma/Next nécessaires. Il devra être vérifié sur ton PC/Vercel.
+Il faut avoir :
+
+```txt
+DATABASE_URL=...
+AUTH_SECRET=...
+AUTH_URL=https://ton-url-vercel-ou-domaine
+NEXT_PUBLIC_SITE_URL=https://ton-url-vercel-ou-domaine
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_PREMIUM_MONTHLY=price_...
+STRIPE_PRICE_PRO_MONTHLY=price_...
+STRIPE_PRICE_LIFETIME=price_...
+```
+
+Important : si tu changes `AUTH_URL` ou `NEXT_PUBLIC_SITE_URL`, fais Redeploy.
+
+## Test final en mode Stripe test
+
+1. Va sur `/login`.
+2. Clique `Inscription`.
+3. Mets un email + mot de passe de 8 caractères minimum.
+4. Tu dois arriver sur `/tarifs`.
+5. Clique Premium ou Pro ou Lifetime.
+6. Stripe Checkout doit s'ouvrir.
+7. Utilise la carte test :
+
+```txt
+4242 4242 4242 4242
+Date future
+CVC 123
+Code postal 75000
+```
+
+8. Après paiement, tu dois revenir sur `/account`.
+9. Ton rôle doit être `premium`, `pro` ou `lifetime`.
+10. Va sur `/fournisseurs`, ouvre une fiche, clique `Débloquer cette fiche`.
+
+## Si l'inscription échoue
+
+- Vérifie que `DATABASE_URL` est bien sur Vercel.
+- Vérifie que `npx prisma db push` a été lancé sur ton PC.
+- Vérifie que `AUTH_SECRET` existe sur Vercel.
+- Vérifie les logs Vercel de `/api/register` ou `/api/auth`.
+
+## Si les fournisseurs affichent 0
+
+Ce ZIP contient une sécurité avec `data/suppliers.json`, donc le catalogue doit s'afficher même si Supabase est vide.
+Si ce n'est pas le cas, vérifie `/api/suppliers` dans le navigateur.
+
+## Avant de vendre en vrai
+
+- Remplace les clés Stripe test par les clés live.
+- Recrée les produits Stripe en mode Live.
+- Recrée le webhook en mode Live.
+- Remplace les variables Vercel par `sk_live`, `pk_live`, `whsec_live` et les nouveaux `price_...`.
+- Corrige les pages légales avec vraie société, SIRET, email, adresse.

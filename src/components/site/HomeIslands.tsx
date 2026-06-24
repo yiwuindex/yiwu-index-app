@@ -17,10 +17,10 @@ export function Teaser() {
   const [preview, setPreview] = useState(false);
   useEffect(() => {
     fetch("/api/suppliers?take=1").then((r) => r.json()).then((j) => setD((j.items || [])[0] || null)).catch(() => {});
-    setPreview(getPreview());
+    setPreview(false);
     const onPrev = (e: Event) => setPreview(!!(e as CustomEvent).detail);
-    window.addEventListener(PREVIEW_EVENT, onPrev);
-    return () => window.removeEventListener(PREVIEW_EVENT, onPrev);
+    // Preview demo disabled in production: real access is controlled by user role + Stripe.
+    return () => {};
   }, []);
   if (!d) return <div style={{ maxWidth: 380 }} />;
   return (

@@ -2,15 +2,12 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getPreview, setPreview } from "@/lib/preview";
 
 const NAV: [string, string][] = [
   ["Accueil", "/"], ["Fournisseurs", "/fournisseurs"], ["Académie", "/academie"],
   ["Outils", "/outils"], ["Transport", "/transport"], ["Tarifs", "/tarifs"], ["FAQ", "/faq"]
 ];
 
-// Maps the design's original data-go targets to real Next routes, so all the
-// existing in-content buttons (hero CTAs, pricing, "Débloquer", etc.) keep working.
 const GO: Record<string, string> = {
   home: "/", suppliers: "/fournisseurs", academy: "/academie",
   tools: "/outils", shipping: "/transport", pricing: "/tarifs", faq: "/faq"
@@ -20,11 +17,7 @@ export function SiteChrome() {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [prev, setPrev] = useState(false);
 
-  useEffect(() => { setPrev(getPreview()); }, []);
-
-  // Delegated router for every [data-go] control rendered anywhere in page content.
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement)?.closest?.("[data-go]") as HTMLElement | null;
@@ -35,8 +28,6 @@ export function SiteChrome() {
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, [router]);
-
-  const togglePrev = () => { const v = !prev; setPrev(v); setPreview(v); };
 
   return (
     <header>
@@ -51,10 +42,6 @@ export function SiteChrome() {
           ))}
         </nav>
         <div className="navactions">
-          <div className="preview" title="Démo : bascule l'aperçu visiteur / membre premium">
-            Premium
-            <button className={"toggle" + (prev ? " on" : "")} onClick={togglePrev} aria-label="Aperçu premium" aria-pressed={prev} />
-          </div>
           <Link className="btn ghost" href="/login">Connexion</Link>
           <Link className="btn primary" href="/tarifs">Devenir Premium</Link>
           <button className="hamb-btn" aria-label="Menu" onClick={() => setOpen((o) => !o)}
