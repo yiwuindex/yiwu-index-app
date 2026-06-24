@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -25,16 +25,6 @@ const GO: Record<string, string> = {
   faq: "/faq",
 };
 
-type Me = {
-  authenticated: boolean;
-  user?: {
-    id: string;
-    email: string;
-    name: string | null;
-    role: "free" | "premium" | "pro" | "lifetime" | "vip";
-  };
-};
-
 function initials(nameOrEmail: string) {
   const clean = nameOrEmail.trim();
   if (!clean) return "U";
@@ -55,28 +45,21 @@ export function SiteChrome() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [me, setMe] = useState<Me>({ authenticated: false });
+
+  // Session from context (persists across navigation; no logged-out flicker).
+  const { data: session, status } = useSession();
+  const user = (session?.user as { email?: string | null; name?: string | null; role?: string } | undefined) ?? undefined;
+  const authenticated = status === "authenticated" && !!user;
 
   const displayName = useMemo(() => {
-    if (!me.user) return "";
-    return me.user.name?.trim() || me.user.email;
-  }, [me.user]);
+    if (!user) return "";
+    return user.name?.trim() || user.email || "";
+  }, [user]);
 
-  useEffect(() => {
-    let alive = true;
-    fetch("/api/me", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => {
-        if (alive) setMe(j);
-      })
-      .catch(() => {
-        if (alive) setMe({ authenticated: false });
-      });
-    return () => {
-      alive = false;
-    };
-  }, [pathname]);
+  // Close the account menu on route change.
+  useEffect(() => { setMenu(false); }, [pathname]);
 
+  // Delegated router for every [data-go] control rendered in page content.
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       const el = (e.target as HTMLElement)?.closest?.("[data-go]") as HTMLElement | null;
@@ -117,13 +100,13 @@ export function SiteChrome() {
         </nav>
 
         <div className="navactions" style={{ position: "relative" }}>
-          {me.authenticated && me.user ? (
+          {authenticated && user ? (
             <>
               <button className="account-pill" type="button" onClick={() => setMenu((v) => !v)}>
                 <span className="account-avatar">{initials(displayName)}</span>
                 <span className="account-text">
                   <b>{displayName}</b>
-                  <small>{roleLabel(me.user.role)}</small>
+                  <small>{roleLabel(user.role)}</small>
                 </span>
               </button>
               {menu && (
@@ -162,7 +145,7 @@ export function SiteChrome() {
                 {label}
               </Link>
             ))}
-            {me.authenticated ? (
+            {authenticated ? (
               <Link href="/account" onClick={() => setOpen(false)} style={{ padding: "10px 8px", fontWeight: 700 }}>Mon compte</Link>
             ) : (
               <Link href="/login" onClick={() => setOpen(false)} style={{ padding: "10px 8px", fontWeight: 700 }}>Connexion</Link>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SiteChrome } from "@/components/site/SiteChrome";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { Providers } from "@/components/Providers";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL || "https://yiwu-index.com";
 export const metadata: Metadata = {
@@ -30,9 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-        <SiteChrome />
-        {children}
-        <SiteFooter />
+        <Providers>
+          <SiteChrome />
+          {children}
+          <SiteFooter />
+        </Providers>
       </body>
     </html>
   );

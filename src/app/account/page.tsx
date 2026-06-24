@@ -18,7 +18,12 @@ export default async function Account() {
   const user = await prisma.user.findUnique({ where: { id: (session.user as any).id }, include: { subscription: true } });
   if (!user) redirect("/login?next=/account");
 
-  const used = await prisma.supplierUnlock.count({ where: { userId: user.id, createdAt: { gte: monthStart() } } });
+  let used = 0;
+  try {
+    used = await prisma.supplierUnlock.count({ where: { userId: user.id, createdAt: { gte: monthStart() } } });
+  } catch (e) {
+    console.error("[account] unlock count failed", e);
+  }
   const limit = unlockLimit(user.role);
   const unlimited = !Number.isFinite(limit);
 

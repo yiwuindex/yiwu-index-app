@@ -65,19 +65,26 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
   const [loading, setLoading] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState(false);
+  const [nonce, setNonce] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    if (!code) { setD(null); return; }
+    if (!code) { setD(null); setLoadError(false); return; }
     let alive = true;
-    setLoading(true); setD(null);
+    setLoading(true); setD(null); setLoadError(false); setError("");
     fetch(`/api/suppliers/${encodeURIComponent(code)}`)
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) throw new Error("http_" + r.status);
+        const j = await r.json();
+        if (!j || typeof j.code !== "string") throw new Error("bad_payload");
+        return j as Detail;
+      })
       .then((j) => { if (alive) setD(j); })
-      .catch(() => { if (alive) setD(null); })
+      .catch(() => { if (alive) { setD(null); setLoadError(true); } })
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
-  }, [code]);
+  }, [code, nonce]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -97,8 +104,11 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
       if (r.status === 403) { router.push("/tarifs"); return; }
       if (r.status === 402) { setError(`Limite mensuelle atteinte (${j.used}/${j.limit}). Passez au plan supérieur.`); return; }
       if (!r.ok) { setError("Impossible de débloquer cette fiche."); return; }
-      const refreshed = await fetch(`/api/suppliers/${encodeURIComponent(d.code)}`).then((res) => res.json());
-      setD(refreshed);
+      const res = await fetch(`/api/suppliers/${encodeURIComponent(d.code)}`);
+      if (res.ok) {
+        const refreshed = await res.json();
+        if (refreshed && typeof refreshed.code === "string") setD(refreshed);
+      }
     } catch {
       setError("Erreur réseau.");
     } finally {
@@ -112,6 +122,25 @@ export function SupplierDrawer({ code, onClose }: { code: string | null; onClose
       <div className={"scrim" + (on ? " on" : "")} onClick={onClose} />
       <aside className={"drawer" + (on ? " on" : "")}>
         {loading && <div className="dr-body"><p className="note">Chargement…</p></div>}
+        {!loading && loadError && (
+          <>
+            <div className="dr-head">
+              <div className="tile">!</div>
+              <div>
+                <div className="code">Fiche</div>
+                <h3 style={{ fontSize: 20 }} className="serif">Fiche indisponible</h3>
+              </div>
+              <button className="dr-x" onClick={onClose}>✕</button>
+            </div>
+            <div className="dr-body">
+              <p className="note">Impossible de charger cette fiche pour le moment. Réessayez dans un instant.</p>
+              <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+                <button className="btn primary" onClick={() => setNonce((n) => n + 1)}>Réessayer</button>
+                <button className="btn ghost" onClick={onClose}>Fermer</button>
+              </div>
+            </div>
+          </>
+        )}
         {d && (
           <>
             <div className="dr-head">
