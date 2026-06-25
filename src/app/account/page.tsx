@@ -42,9 +42,7 @@ export default async function Account({ searchParams }: { searchParams: { checko
   const isPaid = user.role !== "free";
 
   return (
-    <>
-      <SessionRefresh />
-      <main className="wrap" style={{ padding: "60px 22px", maxWidth: 760 }}>
+    <main className="wrap" style={{ padding: "60px 22px", maxWidth: 760 }}>
       <p className="eyebrow">Espace membre</p>
       <h1 className="serif" style={{ fontSize: 34, marginBottom: 8 }}>Mon compte</h1>
 
@@ -66,6 +64,5 @@ export default async function Account({ searchParams }: { searchParams: { checko
         <AccountActions hasCustomer={!!user.stripeCustomerId} />
       </div>
     </main>
-    </>
   );
 }

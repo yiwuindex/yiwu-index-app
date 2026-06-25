@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { getRequestSiteUrl } from "@/lib/site-url";
 
-export async function POST(req: Request) {
+export async function POST() {
   try {
     const session = await auth();
     if (!session?.user) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
@@ -12,7 +11,7 @@ export async function POST(req: Request) {
     if (!user?.stripeCustomerId) return NextResponse.json({ error: "no_customer" }, { status: 400 });
     const portal = await stripe.billingPortal.sessions.create({
       customer: user.stripeCustomerId,
-      return_url: `${getRequestSiteUrl(req)}/account`
+      return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`
     });
     return NextResponse.json({ url: portal.url });
   } catch (e) {
