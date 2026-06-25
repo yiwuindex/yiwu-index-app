@@ -1,4 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
+import { ensureAuthUrlEnv } from "@/lib/site-url";
+
+ensureAuthUrlEnv();
 
 // Edge-safe base config. NO Prisma, NO Resend, NO Node-only imports here —
 // this is what the middleware (Edge runtime) uses. The real Credentials

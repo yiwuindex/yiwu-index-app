@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { ensureAuthUrlEnv } from "@/lib/site-url";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
@@ -12,6 +13,8 @@ const creds = z.object({ email: z.string().email(), password: z.string().min(8) 
 // Full config for the Node runtime (API routes + server components).
 // Inherits the edge-safe base (pages, session, authorized) and adds the
 // Prisma-backed provider, fresh-role callbacks, and the sign-in email event.
+ensureAuthUrlEnv();
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   adapter: PrismaAdapter(prisma),

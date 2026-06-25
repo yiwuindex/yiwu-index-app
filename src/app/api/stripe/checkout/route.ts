@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { stripe, PLANS, type PlanKey } from "@/lib/stripe";
+import { getRequestSiteUrl } from "@/lib/site-url";
 
 export async function POST(req: Request) {
   try {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
       user = await prisma.user.update({ where: { id: userId }, data: { stripeCustomerId: customer.id } });
     }
 
-    const site = process.env.NEXT_PUBLIC_SITE_URL!;
+    const site = getRequestSiteUrl(req);
     const checkout = await stripe.checkout.sessions.create({
       mode: cfg.mode,
       customer: user.stripeCustomerId!,
