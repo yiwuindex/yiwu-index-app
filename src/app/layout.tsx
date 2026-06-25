@@ -4,7 +4,17 @@ import { SiteChrome } from "@/components/site/SiteChrome";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Providers } from "@/components/Providers";
 
-const site = process.env.NEXT_PUBLIC_SITE_URL || "https://yiwu-index.com";
+// Resolve the site URL defensively: a malformed NEXT_PUBLIC_SITE_URL must never
+// throw at module load (that would 500 *every* page). Fall back to the canonical
+// domain on any problem.
+function resolveSite(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL;
+  if (raw) {
+    try { return new URL(raw).origin; } catch {}
+  }
+  return "https://yiwu-index.com";
+}
+const site = resolveSite();
 export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: { default: "Yiwu Index — fournisseurs Yiwu & sourcing Chine", template: "%s · Yiwu Index" },

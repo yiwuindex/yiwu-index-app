@@ -1,7 +1,11 @@
 import Stripe from "stripe";
 import type { Role } from "@prisma/client";
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-06-20" });
+// Use a placeholder when the key is unset so importing this module never throws
+// at load time (a throw here would 500 every route that imports Stripe, including
+// the account page). Real API calls with an invalid key fail at call time and are
+// caught by each route's try/catch.
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_unset_placeholder", { apiVersion: "2024-06-20" });
 
 export const PLANS = {
   premium_monthly: {
