@@ -4,13 +4,17 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   const session = await auth();
-  const id = (session?.user as any)?.id;
+  const id = (session?.user as { id?: string } | undefined)?.id;
 
   if (!id) {
-    return NextResponse.json({ authenticated: false });
+    return NextResponse.json(
+      { authenticated: false },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   }
 
   const user = await prisma.user.findUnique({
@@ -27,19 +31,30 @@ export async function GET() {
   });
 
   if (!user) {
-    return NextResponse.json({ authenticated: false });
+    return NextResponse.json(
+      { authenticated: false },
+      { headers: { "Cache-Control": "no-store, max-age=0" } }
+    );
   }
 
-  return NextResponse.json({
-    authenticated: true,
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      premiumUntil: user.premiumUntil?.toISOString() ?? null,
-      createdAt: user.createdAt.toISOString(),
-      hasStripeCustomer: !!user.stripeCustomerId,
+  const premiumUntil =
+    user.premiumUntil && user.premiumUntil.getTime() > 0
+      ? user.premiumUntil.toISOString()
+      : null;
+
+  return NextResponse.json(
+    {
+      authenticated: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        premiumUntil,
+        createdAt: user.createdAt.toISOString(),
+        hasStripeCustomer: !!user.stripeCustomerId,
+      },
     },
-  });
+    { headers: { "Cache-Control": "no-store, max-age=0" } }
+  );
 }

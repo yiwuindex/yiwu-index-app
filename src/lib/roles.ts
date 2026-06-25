@@ -1,14 +1,15 @@
 import type { Role } from "@prisma/client";
 
+// The DB role is authoritative. Stripe webhooks/success resync are responsible
+// for changing that role; a stale or missing premiumUntil must never hide paid
+// contacts while the current DB role is premium/pro/lifetime/vip.
 export function hasActivePaidAccess(user?: { role?: Role | null; premiumUntil?: Date | string | null } | null): boolean {
-  if (!user?.role) return false;
-  if (user.role === "lifetime" || user.role === "vip") return true;
-  if (user.role === "premium" || user.role === "pro") {
-    if (!user.premiumUntil) return true;
-    const until = typeof user.premiumUntil === "string" ? new Date(user.premiumUntil) : user.premiumUntil;
-    return until.getTime() > Date.now();
-  }
-  return false;
+  return (
+    user?.role === "premium" ||
+    user?.role === "pro" ||
+    user?.role === "lifetime" ||
+    user?.role === "vip"
+  );
 }
 
 export function unlockLimit(role?: Role | null): number {

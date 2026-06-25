@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe";
+import { appBaseUrl, stripe } from "@/lib/stripe";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function POST() {
   try {
@@ -11,7 +15,7 @@ export async function POST() {
     if (!user?.stripeCustomerId) return NextResponse.json({ error: "no_customer" }, { status: 400 });
     const portal = await stripe.billingPortal.sessions.create({
       customer: user.stripeCustomerId,
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/account`
+      return_url: `${appBaseUrl()}/account`
     });
     return NextResponse.json({ url: portal.url });
   } catch (e) {

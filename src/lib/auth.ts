@@ -45,7 +45,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const u = await prisma.user.findUnique({ where: { id } });
           if (u) {
             token.role = u.role;
-            token.premiumUntil = u.premiumUntil ? u.premiumUntil.toISOString() : null;
+            token.premiumUntil = u.premiumUntil && u.premiumUntil.getTime() > 0 ? u.premiumUntil.toISOString() : null;
           }
         } catch (e) {
           console.error("[auth jwt] role refresh failed", e);

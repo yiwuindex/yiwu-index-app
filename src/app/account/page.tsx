@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { unlockLimit } from "@/lib/roles";
+import { hasActivePaidAccess, unlockLimit } from "@/lib/roles";
 import { syncRoleFromStripe } from "@/lib/stripe-sync";
 import { AccountActions } from "@/components/account/AccountActions";
 import { SessionRefresh } from "@/components/account/SessionRefresh";
 
 export const metadata = { title: "Mon compte" };
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function monthStart() {
   const d = new Date();
@@ -39,10 +40,12 @@ export default async function Account({ searchParams }: { searchParams: { checko
   }
   const limit = unlockLimit(user.role);
   const unlimited = !Number.isFinite(limit);
-  const isPaid = user.role !== "free";
+  const isPaid = hasActivePaidAccess(user);
+  const validPremiumUntil = user.premiumUntil && user.premiumUntil.getTime() > 0 ? user.premiumUntil : null;
 
   return (
     <main className="wrap" style={{ padding: "60px 22px", maxWidth: 760 }}>
+      {justPaid && <SessionRefresh />}
       <p className="eyebrow">Espace membre</p>
       <h1 className="serif" style={{ fontSize: 34, marginBottom: 8 }}>Mon compte</h1>
 
@@ -59,7 +62,7 @@ export default async function Account({ searchParams }: { searchParams: { checko
         <p><b>Email :</b> {user.email}</p>
         <p><b>Statut :</b> {roleLabel[user.role] || user.role}</p>
         <p><b>Déblocages ce mois-ci :</b> {unlimited ? "Illimité" : `${used} / ${limit}`}</p>
-        {user.premiumUntil && <p><b>Accès actif jusqu'au :</b> {user.premiumUntil.toLocaleDateString("fr-FR")}</p>}
+        {validPremiumUntil && <p><b>Accès actif jusqu'au :</b> {validPremiumUntil.toLocaleDateString("fr-FR")}</p>}
         {user.subscription?.status && <p><b>Abonnement Stripe :</b> {user.subscription.status}</p>}
         <AccountActions hasCustomer={!!user.stripeCustomerId} />
       </div>

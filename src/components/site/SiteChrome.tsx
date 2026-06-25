@@ -54,8 +54,9 @@ export function SiteChrome() {
   // The role label comes straight from the DB via /api/me (the session's role
   // claim can lag behind a recent payment). Keeps the last value on a failed
   // fetch so it never flickers back to "Free".
-  const [dbRole, setDbRole] = useState<string>("free");
+  const [dbRole, setDbRole] = useState<string>(user?.role || "free");
   useEffect(() => {
+    if (user?.role) setDbRole(user.role);
     if (status !== "authenticated") return;
     let alive = true;
     fetch("/api/me", { cache: "no-store" })
@@ -63,7 +64,7 @@ export function SiteChrome() {
       .then((j) => { if (alive && j?.user?.role) setDbRole(j.user.role); })
       .catch(() => {});
     return () => { alive = false; };
-  }, [status, pathname]);
+  }, [status, pathname, user?.role]);
 
   const displayName = useMemo(() => {
     if (!user) return "";

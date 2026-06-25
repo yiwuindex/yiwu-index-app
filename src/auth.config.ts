@@ -7,6 +7,7 @@ export default {
   pages: { signIn: "/login" },
   session: { strategy: "jwt" },
   trustHost: true,
+  secret: process.env.AUTH_SECRET,
   providers: [],
   callbacks: {
     // Used by middleware to gate protected routes (login presence only).

@@ -1,53 +1,129 @@
-import { stripe, PLANS, roleFromPriceId } from "@/lib/stripe";
-import { prisma } from "@/lib/prisma";
+import type Stripe from "stripe";
 import type { Role } from "@prisma/client";
+import {
+  bestActiveSubscription,
+  isActiveStripeStatus,
+  isProtectedRole,
+  subscriptionRole,
+  safeStripePeriodEnd,
+  stripe,
+} from "@/lib/stripe";
+import { prisma } from "@/lib/prisma";
 
-function roleFromPlan(plan?: string | null, priceId?: string | null): Role {
-  if (plan && plan in PLANS) return PLANS[plan as keyof typeof PLANS].role;
-  return roleFromPriceId(priceId);
+export async function persistActiveSubscription(userId: string, subscription: Stripe.Subscription): Promise<void> {
+  const currentUser = await prisma.user.findUnique({ where: { id: userId } });
+  if (!currentUser) return;
+
+  const priceId = subscription.items.data[0]?.price.id ?? null;
+  const role = subscriptionRole(subscription);
+  const periodEnd = safeStripePeriodEnd(subscription.current_period_end);
+
+  const userData: { role?: Role; premiumUntil?: Date | null } = {};
+  if (!isProtectedRole(currentUser.role) && (role === "premium" || role === "pro")) {
+    userData.role = role;
+    if (periodEnd) {
+      userData.premiumUntil = periodEnd;
+    } else if (!currentUser.premiumUntil || currentUser.premiumUntil.getTime() <= 0) {
+      // Never manufacture 1970 when Stripe omits current_period_end.
+      userData.premiumUntil = null;
+    }
+  }
+
+  const subscriptionWrite = prisma.subscription.upsert({
+    where: { userId },
+    update: {
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: priceId,
+      status: subscription.status,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      ...(periodEnd ? { currentPeriodEnd: periodEnd } : {}),
+    },
+    create: {
+      userId,
+      stripeSubscriptionId: subscription.id,
+      stripePriceId: priceId,
+      status: subscription.status,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      currentPeriodEnd: periodEnd,
+    },
+  });
+
+  if (Object.keys(userData).length) {
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: userId }, data: userData }),
+      subscriptionWrite,
+    ]);
+  } else {
+    await subscriptionWrite;
+  }
 }
 
-// Pull the user's paid status straight from Stripe and update the DB. Used as a
-// fallback when the webhook is late or not yet configured — called when the user
-// lands on /account?checkout=success. It only ever GRANTS access here; downgrades
-// remain the webhook's responsibility (subscription.deleted / refund).
+// Pull the user's paid status straight from Stripe and update the DB. This is
+// called on /account?checkout=success as a fallback when a webhook is delayed.
+// It only grants/repairs access; webhook cancellation handles real downgrades.
 export async function syncRoleFromStripe(userId: string): Promise<void> {
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user?.stripeCustomerId) return;
 
-    // 1) Active subscription → Premium / Pro
-    const subs = await stripe.subscriptions.list({ customer: user.stripeCustomerId, status: "all", limit: 5 });
-    const active = subs.data.find((s) => s.status === "active" || s.status === "trialing");
+    const subscriptions = await stripe.subscriptions.list({
+      customer: user.stripeCustomerId,
+      status: "all",
+      limit: 100,
+    });
+    const active = bestActiveSubscription(subscriptions.data);
+
     if (active) {
-      const priceId = active.items.data[0]?.price.id;
-      const role = roleFromPlan(active.metadata?.plan, priceId);
-      const periodEnd = active.current_period_end ? new Date(active.current_period_end * 1000) : null;
-      await prisma.user.update({ where: { id: userId }, data: { role, premiumUntil: periodEnd } });
-      await prisma.subscription.upsert({
-        where: { userId },
-        update: { status: active.status, stripeSubscriptionId: active.id, stripePriceId: priceId || null, currentPeriodEnd: periodEnd },
-        create: { userId, status: active.status, stripeSubscriptionId: active.id, stripePriceId: priceId || null, currentPeriodEnd: periodEnd },
+      await persistActiveSubscription(userId, active);
+      console.info("[stripe sync] active subscription restored", {
+        userId,
+        subscriptionId: active.id,
+        status: active.status,
       });
       return;
     }
 
-    // 2) One-time Lifetime payment
-    if (user.role !== "lifetime") {
-      const sessions = await stripe.checkout.sessions.list({ customer: user.stripeCustomerId, limit: 5 });
+    // Lifetime is a one-time Checkout payment and must never be removed by an
+    // unrelated subscription event. Older sessions with legacy metadata remain valid.
+    if (!isProtectedRole(user.role)) {
+      const sessions = await stripe.checkout.sessions.list({
+        customer: user.stripeCustomerId,
+        limit: 100,
+      });
       const paidLifetime = sessions.data.find(
-        (s) => s.mode === "payment" && s.payment_status === "paid" && s.metadata?.plan === "lifetime"
+        (session) =>
+          session.mode === "payment" &&
+          session.payment_status === "paid" &&
+          session.metadata?.plan === "lifetime"
       );
+
       if (paidLifetime) {
-        await prisma.user.update({ where: { id: userId }, data: { role: "lifetime", premiumUntil: null } });
-        await prisma.subscription.upsert({
-          where: { userId },
-          update: { status: "lifetime", stripePriceId: process.env.STRIPE_PRICE_LIFETIME || null, currentPeriodEnd: null },
-          create: { userId, status: "lifetime", stripePriceId: process.env.STRIPE_PRICE_LIFETIME || null },
-        });
+        await prisma.$transaction([
+          prisma.user.update({
+            where: { id: userId },
+            data: { role: "lifetime", premiumUntil: null },
+          }),
+          prisma.subscription.upsert({
+            where: { userId },
+            update: {
+              status: "lifetime",
+              stripePriceId: paidLifetime.metadata?.priceId || process.env.STRIPE_PRICE_LIFETIME || null,
+              currentPeriodEnd: null,
+              cancelAtPeriodEnd: false,
+            },
+            create: {
+              userId,
+              status: "lifetime",
+              stripePriceId: paidLifetime.metadata?.priceId || process.env.STRIPE_PRICE_LIFETIME || null,
+              currentPeriodEnd: null,
+            },
+          }),
+        ]);
+        console.info("[stripe sync] lifetime restored", { userId, checkoutSessionId: paidLifetime.id });
       }
     }
   } catch (e) {
-    console.error("[stripe sync] failed", e);
+    // The account page remains available if Stripe has a transient outage.
+    console.error("[stripe sync] failed", e instanceof Error ? e.message : e);
   }
 }

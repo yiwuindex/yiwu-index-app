@@ -5,6 +5,18 @@ import { hasActivePaidAccess, isUnlimited, unlockLimit } from "@/lib/roles";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type PublicSupplierRow = {
+  code: string;
+  name: string;
+  category: string;
+  products: string;
+  tags: string[];
+  district: string;
+  verified: boolean;
+  agent: boolean;
+};
 
 function monthStart() {
   const d = new Date();
@@ -57,7 +69,7 @@ export async function GET(req: Request) {
     const contactsByCode = new Map<string, { wechat: string[]; email: string | null; tel: string | null; location: string | null }>();
 
     if (paid && sid) {
-      const codes = rows.map((r) => r.code);
+      const codes = (rows as PublicSupplierRow[]).map((r) => r.code);
       try {
         used = await prisma.supplierUnlock.count({ where: { userId: sid, createdAt: { gte: monthStart() } } });
         if (unlimited) {
@@ -81,7 +93,7 @@ export async function GET(req: Request) {
       }
     }
 
-    const items = rows.map((r) => {
+    const items = (rows as PublicSupplierRow[]).map((r) => {
       const unlocked = unlockedSet.has(r.code);
       return unlocked ? { ...r, unlocked: true, contacts: contactsByCode.get(r.code) } : { ...r, unlocked: false };
     });

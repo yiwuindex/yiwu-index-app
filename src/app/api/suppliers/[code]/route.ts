@@ -5,6 +5,7 @@ import { hasActivePaidAccess, isUnlimited, unlockLimit } from "@/lib/roles";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 function monthStart() {
   const d = new Date();
