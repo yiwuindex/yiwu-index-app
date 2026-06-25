@@ -34,24 +34,37 @@ export async function GET(req: Request) {
     ]);
 
     const session = await auth();
-    const u = session?.user as any;
-    const paid = !!u?.id && hasActivePaidAccess(u);
-    const unlimited = paid && isUnlimited(u.role);
-    const limit = u?.id ? unlockLimit(u.role) : 0;
+    const sid = (session?.user as any)?.id as string | undefined;
+
+    // Authoritative role straight from the DB (the JWT role claim can be stale).
+    let role: any = undefined;
+    let premiumUntil: Date | null = null;
+    if (sid) {
+      try {
+        const dbUser = await prisma.user.findUnique({ where: { id: sid }, select: { role: true, premiumUntil: true } });
+        role = dbUser?.role;
+        premiumUntil = dbUser?.premiumUntil ?? null;
+      } catch (e) {
+        console.error("[suppliers] role lookup failed", e);
+      }
+    }
+    const paid = !!sid && hasActivePaidAccess({ role, premiumUntil });
+    const unlimited = paid && isUnlimited(role);
+    const limit = sid ? unlockLimit(role) : 0;
 
     let used = 0;
     let unlockedSet = new Set<string>();
     const contactsByCode = new Map<string, { wechat: string[]; email: string | null; tel: string | null; location: string | null }>();
 
-    if (paid) {
+    if (paid && sid) {
       const codes = rows.map((r) => r.code);
       try {
-        used = await prisma.supplierUnlock.count({ where: { userId: u.id, createdAt: { gte: monthStart() } } });
+        used = await prisma.supplierUnlock.count({ where: { userId: sid, createdAt: { gte: monthStart() } } });
         if (unlimited) {
           unlockedSet = new Set(codes); // unlimited members see every contact
         } else {
           const unlocks = await prisma.supplierUnlock.findMany({
-            where: { userId: u.id, supplierCode: { in: codes } },
+            where: { userId: sid, supplierCode: { in: codes } },
             select: { supplierCode: true }
           });
           unlockedSet = new Set(unlocks.map((x: { supplierCode: string }) => x.supplierCode));
@@ -77,7 +90,7 @@ export async function GET(req: Request) {
       items,
       total,
       account: {
-        authenticated: !!u?.id,
+        authenticated: !!sid,
         isPaid: paid,
         unlimited,
         limit: Number.isFinite(limit) ? limit : null,

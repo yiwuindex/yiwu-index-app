@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { unlockLimit } from "@/lib/roles";
 import { syncRoleFromStripe } from "@/lib/stripe-sync";
 import { AccountActions } from "@/components/account/AccountActions";
+import { SessionRefresh } from "@/components/account/SessionRefresh";
 
 export const metadata = { title: "Mon compte" };
 export const dynamic = "force-dynamic";

@@ -1,14 +1,23 @@
 import { LEGAL } from "@/lib/legal";
-export const metadata = { title: "Politique de remboursement" };
-export default function Page() { return (<>
-  <h1>Politique de remboursement</h1>
-  <div className="note">Produit numérique à accès immédiat. Adaptez cette politique à votre stratégie commerciale et au droit applicable
-     (notamment l'art. L221-28 du Code de la consommation sur la renonciation au droit de rétractation pour les contenus numériques).</div>
-  <h2>Principe</h2>
-  <p>L'abonnement donne accès immédiat à un contenu numérique. En validant la commande, l'abonné professionnel demande l'exécution immédiate
-     du service et reconnaît, le cas échéant, renoncer à son droit de rétractation.</p>
-  <h2>Garantie commerciale</h2>
-  <p>[Optionnel] Nous offrons un remboursement sous {LEGAL.refundWindowDays} jours si les conditions de votre garantie sont remplies. Toute demande se fait à {LEGAL.supportEmail}.</p>
-  <h2>Annulation</h2>
-  <p>L'annulation d'un abonnement mensuel stoppe le renouvellement futur ; les périodes déjà payées ne sont pas remboursées au prorata, sauf disposition contraire.</p>
-</>); }
+export const metadata = { title: "Politique de remboursement — Yiwu Index" };
+
+export default function Page() {
+  return (
+    <>
+      <h1>Politique de remboursement</h1>
+      <p>{LEGAL.companyName} fournit un contenu numérique et un service à accès immédiat. La présente politique précise les conditions de remboursement, dans le respect des droits des consommateurs.</p>
+
+      <h2>Principe</h2>
+      <p>L&apos;accès premium est débloqué immédiatement après validation du paiement par {LEGAL.paymentProcessor}. En demandant cet accès immédiat et en accédant au contenu, le client (consommateur) reconnaît renoncer à son droit de rétractation, conformément à l&apos;article L.221-28 du Code de la consommation.</p>
+
+      <h2>Aucun remboursement après accès</h2>
+      <p>En conséquence, et sous réserve des garanties légales, <b>aucun remboursement n&apos;est accordé après le premier accès au contenu</b> (déblocage de fiches, accès à l&apos;académie ou aux outils). Tant qu&apos;aucun contenu n&apos;a été consulté, le consommateur conserve son droit de rétractation de 14 jours et peut demander le remboursement intégral.</p>
+
+      <h2>Annulation d&apos;un abonnement</h2>
+      <p>L&apos;annulation d&apos;un abonnement mensuel met fin au renouvellement à venir. Elle ne donne pas lieu à un remboursement au prorata de la période en cours, qui reste accessible jusqu&apos;à son terme. L&apos;annulation s&apos;effectue à tout moment depuis « Mon compte ».</p>
+
+      <h2>Cas particuliers</h2>
+      <p>Un remboursement pourra être étudié en cas de double facturation, de paiement non autorisé ou d&apos;indisponibilité prolongée du service imputable à l&apos;Éditeur. Toute demande est à adresser à {LEGAL.supportEmail}.</p>
+    </>
+  );
+}

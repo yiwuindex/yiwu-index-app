@@ -33,11 +33,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     ...authConfig.callbacks,
-    // keep role + premiumUntil fresh on the token (re-read from DB each pass)
-    async jwt({ token }) {
-      if (token.sub) {
-        const u = await prisma.user.findUnique({ where: { id: token.sub } });
-        if (u) { token.role = u.role; token.premiumUntil = u.premiumUntil?.toISOString() ?? null; }
+    // Load role + premiumUntil onto the token. On sign-in `user` carries the id
+    // (token.sub isn't set yet with the Credentials provider), so we use it. We
+    // also re-read on session updates. On a transient DB error we KEEP the
+    // previous role rather than dropping the user to "free".
+    async jwt({ token, user }) {
+      const id = (user as { id?: string } | undefined)?.id ?? token.sub;
+      if (id) {
+        token.sub = id;
+        try {
+          const u = await prisma.user.findUnique({ where: { id } });
+          if (u) {
+            token.role = u.role;
+            token.premiumUntil = u.premiumUntil ? u.premiumUntil.toISOString() : null;
+          }
+        } catch (e) {
+          console.error("[auth jwt] role refresh failed", e);
+        }
       }
       return token;
     },

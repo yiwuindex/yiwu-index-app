@@ -1,43 +1,54 @@
 // ============================================================================
-//  INFORMATIONS LÉGALES — À REMPLIR UNE SEULE FOIS ICI.
-//  Toutes les pages légales (mentions, CGV, confidentialité, cookies,
-//  remboursement, conditions d'abonnement) et le pied de page lisent ce fichier.
-//  Remplacez chaque valeur entre crochets [ ... ] par votre information réelle.
+//  INFORMATIONS LÉGALES — source unique pour toutes les pages légales + footer.
+//  Pour modifier une info, changez-la ICI uniquement.
 // ============================================================================
 
 export const LEGAL = {
-  // — Identité de l'entreprise —
-  companyName: "Yiwu Index",                 // nom commercial affiché
-  legalName: "[RAISON SOCIALE]",             // raison sociale complète
-  legalStatus: "[FORME JURIDIQUE]",          // ex : SAS, SASU, EURL, auto-entrepreneur
-  capital: "[MONTANT]",                      // capital social, en € (ou "" si non applicable)
-  rcsCity: "[VILLE RCS]",                    // ville d'immatriculation au RCS
-  siret: "[SIRET]",                          // n° SIRET / RCS
-  vatNumber: "[N° TVA]",                     // TVA intracommunautaire
+  // — Identité —
+  companyName: "Yiwu Index",
+  entrepreneur: "Hugo Duquesne",
+  legalName: "DUQUESNE Hugo, Georges, Henri",
+  legalStatus: "Entreprise individuelle (micro-entrepreneur)",
+  siren: "943 301 838",
+  rcs: "943 301 838 R.C.S. Dax",
+  vatNote: "TVA non applicable, art. 293 B du CGI",
+  address: "150 Place Nauton Truquez, 40300 Peyrehorade, France",
 
-  // — Personnes —
-  ownerName: "[NOM DU RESPONSABLE]",         // gérant / président
-  publicationDirector: "[NOM DU RESPONSABLE]", // directeur de la publication
+  // — Direction —
+  publicationDirector: "Hugo Duquesne",
 
-  // — Coordonnées —
-  address: "[ADRESSE DU SIÈGE]",
-  supportEmail: "[EMAIL SUPPORT]",
-  phone: "[TÉLÉPHONE]",
+  // — Contact —
+  supportEmail: "support@yiwu-index.com",
+  rgpdEmail: "support@yiwu-index.com",
+  phoneNote: "Aucun support téléphonique — assistance uniquement par e-mail",
 
-  // — Hébergement —
-  hostingProvider: "Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA",
-  dbProvider: "Supabase",                    // hébergeur de la base de données
+  // — Technique / sous-traitants —
+  hostingProvider: "Vercel Inc.",
+  hostingAddress: "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
+  hostingSite: "https://vercel.com",
+  paymentProcessor: "Stripe Payments Europe, Ltd.",
+  emailProcessor: "Resend",
+  analytics: "Vercel Analytics (mesure d'audience sans cookie)",
 
-  // — RGPD / remboursement —
-  dataRetentionYears: "[X]",                 // années de conservation après fin d'abonnement
-  refundWindowDays: "14",                    // jours de garantie commerciale (si vous en offrez une)
-  courtCity: "[VILLE]",                      // tribunal compétent en cas de litige
+  // — Litiges —
+  court: "Tribunal de commerce de Dax",
+  // OBLIGATION B2C : un médiateur de la consommation doit être désigné si vous
+  // vendez à des particuliers. Renseignez son nom + URL une fois souscrit.
+  mediatorName: "[MÉDIATEUR DE LA CONSOMMATION À DÉSIGNER]",
+  mediatorUrl: "[https://… site du médiateur]",
+  euOdrUrl: "https://ec.europa.eu/consumers/odr",
 
-  // — Divers —
+  // — RGPD —
+  retentionAfterDeletion: "3 ans",
+  billingRetention: "10 ans (obligation comptable)",
+
+  // — Site —
   siteUrl: "https://yiwu-index.com",
+  domain: "yiwu-index.com",
+  lastUpdated: "25 juin 2026",
 
-  // — Tarifs (gardez synchronisé avec la page /tarifs et Stripe) —
+  // — Offres (à garder synchro avec /tarifs et Stripe) —
   pricePremium: "49 €/mois",
   pricePro: "89 €/mois",
-  priceLifetime: "399 €",
+  priceLifetime: "399 € (paiement unique)",
 } as const;

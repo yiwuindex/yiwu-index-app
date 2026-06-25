@@ -34,8 +34,19 @@ export async function GET(_req: Request, { params }: { params: { code: string } 
     if (!s) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
     const session = await auth();
-    const user = session?.user as any;
-    const access = await getAccess(user?.id, s.code, user?.role, user?.premiumUntil);
+    const sid = (session?.user as any)?.id as string | undefined;
+    let role: any = undefined;
+    let premiumUntil: Date | null = null;
+    if (sid) {
+      try {
+        const du = await prisma.user.findUnique({ where: { id: sid }, select: { role: true, premiumUntil: true } });
+        role = du?.role;
+        premiumUntil = du?.premiumUntil ?? null;
+      } catch (e) {
+        console.error("[supplier detail] role lookup failed", e);
+      }
+    }
+    const access = await getAccess(sid, s.code, role, premiumUntil);
 
     const base = {
       code: s.code,
@@ -52,19 +63,19 @@ export async function GET(_req: Request, { params }: { params: { code: string } 
       return NextResponse.json({
         ...base,
         locked: true,
-        authenticated: !!user?.id,
+        authenticated: !!sid,
         alreadyUnlocked: access.unlocked,
         remainingUnlocks: access.remaining === Infinity ? null : access.remaining,
         monthlyLimit: access.limit === Infinity ? null : access.limit,
         channels: { wechat: s.wechat.length > 0, email: !!s.email, tel: !!s.tel, address: !!s.location },
-        cta: user?.id ? "Débloquez cette fiche" : "Connectez-vous pour débloquer",
+        cta: sid ? "Débloquez cette fiche" : "Connectez-vous pour débloquer",
       });
     }
 
     return NextResponse.json({
       ...base,
       locked: false,
-      authenticated: !!user?.id,
+      authenticated: !!sid,
       alreadyUnlocked: access.unlocked,
       remainingUnlocks: access.remaining === Infinity ? null : access.remaining,
       monthlyLimit: access.limit === Infinity ? null : access.limit,
