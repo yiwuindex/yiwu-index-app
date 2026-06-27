@@ -35,7 +35,7 @@ export default function TarifsPage() {
       <div className="wrap section">
         <p className="eyebrow">Tarifs</p>
         <h2 className="serif" style={{ fontSize: 30, marginBottom: 6 }}>Choisissez votre accès</h2>
-        <p className="lead" style={{ marginBottom: 30 }}>Annulable à tout moment. Les fournisseurs sont mis à jour en continu.</p>
+        <p className="lead" style={{ marginBottom: 30 }}>Académie, guides et outils en accès libre. Vous ne payez que pour les coordonnées des fournisseurs — annulable à tout moment, sans engagement.</p>
 
         <div className="plans">
           {/* FREE */}
@@ -43,12 +43,12 @@ export default function TarifsPage() {
             <h3>Free</h3>
             <div className="price">0€</div>
             <ul>
-              <li>Aperçu de l&apos;annuaire</li>
-              <li>Accès limité aux fournisseurs</li>
-              <li>Recherche de base</li>
-              <li>Sans engagement</li>
+              <li>Académie, guides &amp; outils inclus</li>
+              <li>Aperçu de l&apos;annuaire : noms et catégories</li>
+              <li>Recherche et filtres par catégorie</li>
+              <li>Sans engagement, sans carte bancaire</li>
             </ul>
-            <button className="btn ghost" data-go="suppliers">Commencer</button>
+            <button className="btn ghost" data-go="suppliers">Commencer gratuitement</button>
           </div>
 
           {/* PREMIUM — gold */}
@@ -57,12 +57,12 @@ export default function TarifsPage() {
             <h3>Premium</h3>
             <div className="price">49€<small>/mois</small></div>
             <ul>
-              <li>10 déblocages de contacts/mois</li>
-              <li>Accès à l&apos;annuaire complet</li>
-              <li>Académie Yiwu Index</li>
-              <li>Outils de sourcing</li>
-              <li>Favoris</li>
-              <li>Support standard</li>
+              <li>Coordonnées complètes : WeChat, e-mail, téléphone, n° de stand</li>
+              <li>10 déblocages de contacts par mois</li>
+              <li>Accès à l&apos;annuaire complet (1 540 fournisseurs)</li>
+              <li>Favoris et fiches sauvegardées</li>
+              <li>Mises à jour de l&apos;annuaire incluses</li>
+              <li>Support par e-mail</li>
             </ul>
             <button className="btn gold" disabled={busy !== null} onClick={() => checkout("premium_monthly")}>
               {busy === "premium_monthly" ? "Redirection…" : "Devenir Premium"}
@@ -75,11 +75,10 @@ export default function TarifsPage() {
             <h3>Pro</h3>
             <div className="price">89€<small>/mois</small></div>
             <ul>
-              <li>50 déblocages de contacts/mois</li>
               <li>Tout Premium inclus</li>
-              <li>Export CSV / Excel</li>
-              <li>Recherche avancée</li>
-              <li>Support prioritaire</li>
+              <li>50 déblocages de contacts par mois (5× plus)</li>
+              <li>Idéal pour un sourcing intensif, multi-catégories</li>
+              <li>Support prioritaire par e-mail</li>
             </ul>
             <button className="btn jade" disabled={busy !== null} onClick={() => checkout("pro_monthly")}>
               {busy === "pro_monthly" ? "Redirection…" : "Devenir Pro"}
@@ -92,9 +91,10 @@ export default function TarifsPage() {
             <h3>Lifetime</h3>
             <div className="price">399€</div>
             <ul>
-              <li>Déblocages illimités</li>
-              <li>Accès à vie</li>
-              <li>Toutes les futures mises à jour</li>
+              <li>Déblocages illimités — tous les contacts, sans compteur</li>
+              <li>Accès à vie, aucun abonnement</li>
+              <li>Toutes les futures mises à jour incluses</li>
+              <li>Le choix le plus rentable si vous sourcez régulièrement</li>
             </ul>
             <button className="btn primary" disabled={busy !== null} onClick={() => checkout("lifetime")}>
               {busy === "lifetime" ? "Redirection…" : "Accès à vie"}
