@@ -7,6 +7,14 @@ const legal: [string, string][] = [
   ["Conditions d'abonnement", "/conditions-abonnement"], ["Remboursement", "/remboursement"]
 ];
 
+const seoLinks: [string, string][] = [
+  ["Guides import Chine", "/guides"],
+  ["Importer de Chine", "/guides/importer-de-chine"],
+  ["Fournisseurs vêtements", "/fournisseurs/vetements"],
+  ["Fournisseurs électronique", "/fournisseurs/electronique"],
+  ["Fournisseurs packaging", "/fournisseurs/emballage"],
+];
+
 export function SiteFooter() {
   return (
     <footer>
@@ -16,7 +24,10 @@ export function SiteFooter() {
             <div className="seal">义</div>
             <div><b>YIWU INDEX</b><small>Sourcing intelligence</small></div>
           </div>
-          <nav style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 16, fontSize: 13 }}>
+          <nav style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 16, fontSize: 13 }} aria-label="Pages SEO">
+            {seoLinks.map(([l, h]) => <Link key={h} href={h} style={{ color: "var(--slate)", fontWeight: 700 }}>{l}</Link>)}
+          </nav>
+          <nav style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 12, fontSize: 13 }} aria-label="Pages légales">
             {legal.map(([l, h]) => <Link key={h} href={h} style={{ color: "var(--slate)" }}>{l}</Link>)}
           </nav>
         </div>

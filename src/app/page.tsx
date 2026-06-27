@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HeroPreview, Teaser } from "@/components/site/HomeIslands";
+import { guides, supplierCategories } from "@/lib/seo-content";
 
 export default function Home() {
   return (
@@ -31,6 +32,26 @@ export default function Home() {
           <div className="feat"><div className="ic" style={{ background: "var(--jade-soft)", color: "var(--jade)" }}>✓</div><h3>Fournisseurs vérifiés</h3><p>Chaque fournisseur est recherché à la main : stand localisé au marché de Yiwu, coordonnées directes confirmées.</p></div>
           <div className="feat"><div className="ic" style={{ background: "var(--seal-soft)", color: "var(--seal)" }}>💬</div><h3>Contacts directs</h3><p>WeChat, e-mail, téléphone et adresse exacte du stand : les coordonnées directes du fournisseur, débloquées d&apos;un seul coup. Pas d&apos;intermédiaire opaque.</p></div>
           <div className="feat"><div className="ic" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>🎓</div><h3>Académie d&apos;importation</h3><p>De la négociation aux douanes : 12 modules pour importer de A à Z sans vous faire avoir.</p></div>
+        </div>
+      </div>
+
+      <div className="section wrap" style={{ paddingTop: 0 }}>
+        <p className="eyebrow">Catégories fournisseurs</p>
+        <h2 className="serif" style={{ fontSize: 26, marginBottom: 8 }}>Explorez les catégories les plus demandées.</h2>
+        <p className="lead" style={{ marginBottom: 20 }}>Des pages publiques aident à comprendre chaque marché ; les coordonnées directes restent réservées aux membres.</p>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {supplierCategories.slice(0, 8).map((category) => (
+            <Link key={category.slug} className="btn ghost" href={`/fournisseurs/${category.slug}`}>
+              {category.name}
+            </Link>
+          ))}
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 14 }}>
+          {guides.slice(0, 3).map((guide) => (
+            <Link key={guide.slug} className="btn ghost" href={`/guides/${guide.slug}`}>
+              {guide.h1}
+            </Link>
+          ))}
         </div>
       </div>
 

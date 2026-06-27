@@ -1,4 +1,10 @@
-export const metadata = { title: "Académie" };
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Académie import Chine",
+  description: "12 modules pour comprendre le sourcing à Yiwu, les MOQ, les échantillons, le transport, les incoterms, les douanes et les arnaques courantes.",
+  alternates: { canonical: "/academie" },
+};
 
 // 12 modules — content ported verbatim from the design. Static HTML authored here
 // (templates, checklists), rendered inside the <details> accordion markup.

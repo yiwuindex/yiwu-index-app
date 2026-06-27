@@ -1,4 +1,10 @@
-export const metadata = { title: "FAQ" };
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FAQ Yiwu Index",
+  description: "Questions fréquentes sur Yiwu Index, les fournisseurs vérifiés, les contacts directs, les abonnements et le sourcing en Chine.",
+  alternates: { canonical: "/faq" },
+};
 
 const QA: [string, string][] = [
   ["Les fournisseurs sont-ils vérifiés ?", "« Vérifié » signifie que le stand est localisé au marché de Yiwu (emplacement précis identifié au sein du marché). C'est un repère sur la qualité de la donnée — pas une garantie sur la qualité des produits."],
@@ -10,8 +16,19 @@ const QA: [string, string][] = [
 ];
 
 export default function FaqPage() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: QA.map(([q, a]) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+
   return (
     <section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <div className="wrap section" style={{ maxWidth: 820 }}>
         <p className="eyebrow">FAQ</p>
         <h2 className="serif" style={{ fontSize: 30, marginBottom: 24 }}>Questions fréquentes</h2>

@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LEGAL } from "@/lib/legal";
+
+export const metadata: Metadata = {
+  title: "Informations légales",
+  description: "Mentions légales, CGV, confidentialité, cookies, conditions d'abonnement et remboursement de Yiwu Index.",
+};
+
 
 export default function LegalLayout({ children }: { children: React.ReactNode }) {
   return (

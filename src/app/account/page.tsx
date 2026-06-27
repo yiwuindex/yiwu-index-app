@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,7 +7,10 @@ import { syncRoleFromStripe } from "@/lib/stripe-sync";
 import { AccountActions } from "@/components/account/AccountActions";
 import { SessionRefresh } from "@/components/account/SessionRefresh";
 
-export const metadata = { title: "Mon compte" };
+export const metadata: Metadata = {
+  title: "Mon compte",
+  robots: { index: false, follow: false },
+};
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
