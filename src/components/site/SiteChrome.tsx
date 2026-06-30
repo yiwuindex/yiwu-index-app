@@ -99,6 +99,15 @@ export function SiteChrome() {
 
   return (
     <header>
+      <div className="launch-banner">
+        <div className="wrap launch-banner-inner">
+          <span className="launch-kicker">Offre de lancement</span>
+          <span><b>-50% sur le premier mois</b> Premium/Pro avec <code>YIWU50</code></span>
+          <span className="launch-sep">•</span>
+          <span><b>-100€ sur Lifetime</b> avec <code>YIWULIFE100</code></span>
+          <Link className="launch-link" href="/tarifs">Voir les offres</Link>
+        </div>
+      </div>
       <div className="wrap nav">
         <Link className="brand" href="/">
           <div className="seal">义</div>
@@ -172,6 +181,13 @@ export function SiteChrome() {
       )}
 
       <style>{`
+        .launch-banner{background:linear-gradient(90deg,var(--ink),#2c2118);color:#fff;border-bottom:1px solid rgba(255,255,255,.10)}
+        .launch-banner-inner{display:flex;align-items:center;justify-content:center;gap:10px;min-height:38px;font-size:13px;text-align:center;flex-wrap:wrap;padding-top:7px;padding-bottom:7px}
+        .launch-kicker{background:var(--seal);color:#fff;border-radius:999px;padding:3px 9px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+        .launch-banner code{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:2px 7px;color:#fff;font-weight:900;font-family:"IBM Plex Mono",monospace;font-size:12px}
+        .launch-link{color:#fff;font-weight:900;text-decoration:underline;text-underline-offset:3px}
+        .launch-sep{opacity:.45}
+        @media(max-width:760px){.launch-banner-inner{font-size:12px;gap:7px}.launch-sep{display:none}}
         @media(max-width:1000px){.hamb-btn{display:inline-flex!important;align-items:center;justify-content:center}}
         .account-pill{display:flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px 5px 6px;cursor:pointer;max-width:250px}
         .account-avatar{width:30px;height:30px;border-radius:999px;background:var(--jade);color:white;display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}

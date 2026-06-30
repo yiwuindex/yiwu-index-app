@@ -35,7 +35,19 @@ export default function TarifsPage() {
       <div className="wrap section">
         <p className="eyebrow">Tarifs</p>
         <h2 className="serif" style={{ fontSize: 30, marginBottom: 6 }}>Choisissez votre accès</h2>
-        <p className="lead" style={{ marginBottom: 30 }}>Académie, guides et outils en accès libre. Vous ne payez que pour les coordonnées des fournisseurs — annulable à tout moment, sans engagement.</p>
+        <p className="lead" style={{ marginBottom: 24 }}>Académie, guides et outils en accès libre. Vous ne payez que pour les coordonnées des fournisseurs — annulable à tout moment, sans engagement.</p>
+
+        <div className="launch-offer-card" aria-label="Offre de lancement Yiwu Index">
+          <div>
+            <p className="launch-offer-eyebrow">Offre de lancement</p>
+            <h3 className="serif">Testez Yiwu Index à prix réduit.</h3>
+            <p>Entrez le code sur la page Stripe Checkout, juste avant le paiement.</p>
+          </div>
+          <div className="launch-offer-codes">
+            <div><span>Premium / Pro</span><code>YIWU50</code><small>-50% sur le premier mois</small></div>
+            <div><span>Lifetime</span><code>YIWULIFE100</code><small>100€ de réduction</small></div>
+          </div>
+        </div>
 
         <div className="plans">
           {/* FREE */}
@@ -56,6 +68,7 @@ export default function TarifsPage() {
             <div className="plan-badge g">Le plus populaire</div>
             <h3>Premium</h3>
             <div className="price">49€<small>/mois</small></div>
+            <p className="promo-line">Avec YIWU50 : 24,50€ le premier mois</p>
             <ul>
               <li>Coordonnées complètes : WeChat, e-mail, téléphone, n° de stand</li>
               <li>10 déblocages de contacts par mois</li>
@@ -74,6 +87,7 @@ export default function TarifsPage() {
             <div className="plan-badge j">Meilleur rapport qualité/prix</div>
             <h3>Pro</h3>
             <div className="price">89€<small>/mois</small></div>
+            <p className="promo-line">Avec YIWU50 : 44,50€ le premier mois</p>
             <ul>
               <li>Tout Premium inclus</li>
               <li>50 déblocages de contacts par mois (5× plus)</li>
@@ -90,6 +104,7 @@ export default function TarifsPage() {
             <div className="pop-badge">🔥 Offre de lancement</div>
             <h3>Lifetime</h3>
             <div className="price">399€</div>
+            <p className="promo-line">Avec YIWULIFE100 : 299€</p>
             <ul>
               <li>Déblocages illimités — tous les contacts, sans compteur</li>
               <li>Accès à vie, aucun abonnement</li>
