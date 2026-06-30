@@ -187,20 +187,6 @@ select.f{font-size:13.5px;font-weight:600;background:var(--surface);border:1.5px
 .formgrid .full{grid-column:1/-1}
 .disclose{background:var(--gold-soft);border:1px solid #ecdcb5;border-radius:12px;padding:14px 16px;font-size:13px;color:#7a5a12;margin-top:18px}
 
-
-/* launch offer */
-.launch-offer-card{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;margin:0 0 30px;padding:22px;border:1px solid #ead7ad;background:linear-gradient(135deg,var(--gold-soft),#fffaf0);border-radius:var(--radius);box-shadow:0 16px 42px -34px rgba(184,132,31,.7)}
-.launch-offer-eyebrow{margin:0 0 6px;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:800}
-.launch-offer-card h3{font-size:25px;margin:0 0 6px}
-.launch-offer-card p{margin:0;color:var(--ink-2);font-size:14px}
-.launch-offer-codes{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.launch-offer-codes>div{background:var(--surface);border:1px solid #ead7ad;border-radius:13px;padding:12px 14px;min-width:170px}
-.launch-offer-codes span{display:block;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--slate);margin-bottom:5px}
-.launch-offer-codes code{display:inline-block;background:var(--ink);color:#fff;border-radius:8px;padding:4px 8px;font-family:"IBM Plex Mono",monospace;font-weight:900;font-size:13px}
-.launch-offer-codes small{display:block;color:var(--gold);font-weight:800;margin-top:6px;font-size:12px}
-.promo-line{font-size:12.5px!important;font-weight:800;color:var(--seal);margin:0 0 10px!important}
-@media(max-width:840px){.launch-offer-card{grid-template-columns:1fr}.launch-offer-codes{justify-content:flex-start}.launch-offer-codes>div{flex:1;min-width:160px}}
-
 /* pricing */
 .plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:stretch}
 @media(max-width:1000px){.plans{grid-template-columns:1fr 1fr}}@media(max-width:560px){.plans{grid-template-columns:1fr}}
@@ -284,3 +270,17 @@ footer{border-top:1px solid var(--line);background:var(--surface);margin-top:40p
 .legal p,.legal li{color:var(--ink-2);font-size:14.5px;line-height:1.7}
 .authwrap{max-width:420px;margin:60px auto;padding:0 22px}
 .authwrap input{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:var(--surface);margin-bottom:12px}
+
+/* ——— Offre de lancement (front uniquement) ——— */
+.launch-banner{background:var(--ink);color:var(--paper);text-align:center;font-size:13px;line-height:1.45;padding:9px 16px}
+.launch-banner b{color:#f0c46a;font-weight:700}
+.launch-banner code{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink);background:var(--gold);padding:1px 7px;border-radius:6px;font-size:12px;white-space:nowrap;margin:0 1px}
+@media(max-width:560px){.launch-banner{font-size:11.5px;padding:8px 12px}}
+
+.launch-box{background:var(--gold-soft);border:1px solid #e3c987;border-radius:14px;padding:16px 20px;margin:0 0 26px}
+.launch-box .lb-title{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0 0 8px}
+.launch-box p{color:var(--ink-2);font-size:14px;line-height:1.65;margin:0}
+.launch-box code{font-family:"IBM Plex Mono",monospace;font-weight:600;color:#fff;background:var(--seal);padding:1px 6px;border-radius:5px;font-size:12.5px;white-space:nowrap;margin:0 1px}
+
+.plan-promo{margin:10px 0 0;font-size:11.5px;font-weight:600;color:var(--slate);text-align:center;line-height:1.4}
+.plan-promo code{font-family:"IBM Plex Mono",monospace;background:var(--gold-soft);color:var(--gold);padding:1px 6px;border-radius:5px;font-weight:700;font-size:11px}
