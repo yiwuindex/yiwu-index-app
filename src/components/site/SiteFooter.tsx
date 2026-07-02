@@ -9,6 +9,9 @@ const legal: [string, string][] = [
 
 const seoLinks: [string, string][] = [
   ["Guides import Chine", "/guides"],
+  ["Fournisseur Yiwu", "/fournisseur-yiwu"],
+  ["Importer de Yiwu", "/guides/importer-de-yiwu"],
+  ["Société import export Yiwu", "/guides/societe-import-export-yiwu"],
   ["Importer de Chine", "/guides/importer-de-chine"],
   ["Fournisseurs vêtements", "/fournisseurs/vetements"],
   ["Fournisseurs électronique", "/fournisseurs/electronique"],

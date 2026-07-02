@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const coreRoutes = [
     { path: "", priority: 1, changeFrequency: "weekly" as const },
     { path: "/fournisseurs", priority: 0.95, changeFrequency: "weekly" as const },
+    { path: "/fournisseur-yiwu", priority: 0.85, changeFrequency: "monthly" as const },
     { path: "/tarifs", priority: 0.9, changeFrequency: "weekly" as const },
     { path: "/guides", priority: 0.75, changeFrequency: "weekly" as const },
     { path: "/academie", priority: 0.7, changeFrequency: "monthly" as const },

@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { tintOf } from "@/lib/format";
 import { SupplierCard, type SupplierListItem, type SupplierContacts } from "@/components/site/cards";
 import { SupplierDrawer } from "@/components/site/SupplierDrawer";
@@ -112,8 +113,14 @@ export default function FournisseursPage() {
     <section>
       <div className="wrap" style={{ paddingTop: 30 }}>
         <p className="eyebrow">Base de données</p>
-        <h2 className="serif" style={{ fontSize: 30, marginBottom: 6 }}>Intelligence fournisseurs</h2>
-        <p className="lead">Recherchez, filtrez et triez. Les stands localisés au marché sont mis en avant.</p>
+        <h1 className="serif" style={{ fontSize: 30, marginBottom: 6 }}>Fournisseurs à Yiwu et fournisseurs chinois vérifiés</h1>
+        <p className="lead">
+          Yiwu Index référence plus de 1 500 fournisseurs du marché de Yiwu (Yiwu International Trade City), le plus grand
+          marché de gros de petites marchandises au monde. Chaque fiche présente la catégorie, les produits phares et le
+          district du stand ; la mention « Stand localisé » indique un stand repéré au marché de Yiwu. Recherchez par
+          mot-clé, filtrez par catégorie, sauvegardez vos favoris — puis débloquez les coordonnées directes (WeChat,
+          e-mail, téléphone, numéro de stand) avec un abonnement pour contacter les fournisseurs sans intermédiaire.
+        </p>
       </div>
 
       <div className="wrap">
@@ -196,6 +203,49 @@ export default function FournisseursPage() {
             {loading ? "Chargement…" : `Afficher plus (${(total - items.length).toLocaleString("fr-FR")})`}
           </button>
         )}
+      </div>
+
+      {/* ——— Contenu SEO statique (n'affecte ni la liste ni les API) ——— */}
+      <div className="wrap section" style={{ maxWidth: 920 }}>
+        <div className="panelbox">
+          <h2 className="serif" style={{ fontSize: 24, marginBottom: 10 }}>Pourquoi chercher un fournisseur à Yiwu ?</h2>
+          <p style={{ color: "var(--slate)", lineHeight: 1.75, marginBottom: 10 }}>
+            Yiwu concentre en un seul lieu des dizaines de milliers de stands de grossistes et de fabricants, répartis en
+            districts spécialisés. Pour un importateur, c&apos;est la possibilité de comparer rapidement les gammes, de
+            composer des commandes multi-produits avec des minimums accessibles, et d&apos;obtenir des prix de gros
+            compétitifs — y compris sur de petites quantités. C&apos;est ce qui fait de Yiwu une porte d&apos;entrée idéale
+            pour tester des produits ou approvisionner un e-commerce.
+          </p>
+
+          <h2 className="serif" style={{ fontSize: 24, margin: "22px 0 10px" }}>Quels types de fournisseurs trouver sur Yiwu Index ?</h2>
+          <p style={{ color: "var(--slate)", lineHeight: 1.75, marginBottom: 10 }}>
+            L&apos;annuaire couvre 14 catégories : jouets, accessoires, sport &amp; outdoor, maison, beauté, électronique,
+            papeterie, bagagerie, auto, animaux et plus encore. Chaque fiche indique les produits phares du stand, son
+            district, et si le fournisseur est un fabricant ou un revendeur. Les coordonnées directes — WeChat, e-mail,
+            téléphone et numéro de stand — sont réservées aux membres et servies de manière sécurisée.
+          </p>
+
+          <h2 className="serif" style={{ fontSize: 24, margin: "22px 0 10px" }}>Comment vérifier un fournisseur chinois ?</h2>
+          <p style={{ color: "var(--slate)", lineHeight: 1.75, marginBottom: 10 }}>
+            Aucune liste ne remplace la vérification : demandez un échantillon avant toute commande, exigez des photos et
+            vidéos réelles, faites confirmer prix, MOQ et délais par écrit, et privilégiez des paiements sécurisés avec
+            acompte plutôt qu&apos;un règlement intégral. Sur Yiwu Index, la mention « Stand localisé » signifie qu&apos;un
+            stand a été repéré au marché de Yiwu — c&apos;est un repère utile, pas une garantie de qualité produit. Notre{" "}
+            <Link href="/guides" style={{ color: "var(--jade)", fontWeight: 600 }}>section guides</Link> détaille la
+            méthode complète de vérification.
+          </p>
+
+          <h2 className="serif" style={{ fontSize: 24, margin: "22px 0 10px" }}>Comment Yiwu Index aide les importateurs ?</h2>
+          <p style={{ color: "var(--slate)", lineHeight: 1.75, marginBottom: 0 }}>
+            Yiwu Index fait gagner l&apos;étape la plus longue du sourcing : constituer un carnet de contacts fiables. Vous
+            recherchez par produit, comparez les stands, puis débloquez les coordonnées directes selon votre{" "}
+            <Link href="/tarifs" style={{ color: "var(--jade)", fontWeight: 600 }}>formule d&apos;abonnement</Link> — sans
+            commission sur vos achats et sans intermédiaire. Pour aller plus loin, consultez nos guides pratiques :{" "}
+            <Link href="/guides/importer-de-yiwu" style={{ color: "var(--jade)", fontWeight: 600 }}>comment importer de Yiwu</Link>,{" "}
+            <Link href="/guides/societe-import-export-yiwu" style={{ color: "var(--jade)", fontWeight: 600 }}>choisir une société import-export à Yiwu</Link>{" "}
+            ou notre page dédiée <Link href="/fournisseur-yiwu" style={{ color: "var(--jade)", fontWeight: 600 }}>trouver un fournisseur à Yiwu</Link>.
+          </p>
+        </div>
       </div>
 
       <SupplierDrawer code={detail} onClose={() => setDetail(null)} onUnlocked={onDrawerUnlocked} />

@@ -97,9 +97,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify([websiteSchema, organizationSchema]) }}
         />
         <Providers>
-          <div className="launch-banner">
-            <span>Offre de lancement : <b>-50%</b> le premier mois avec le code <code>YIWU50</code> — Lifetime : <b>-100€</b> avec <code>YIWULIFE100</code></span>
-          </div>
           <SiteChrome />
           {children}
           <SiteFooter />

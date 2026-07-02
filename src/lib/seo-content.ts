@@ -121,6 +121,7 @@ export type GuideSeo = {
   intro: string;
   sections: { heading: string; body: string[] }[];
   faq: { question: string; answer: string }[];
+  related?: [string, string][];
 };
 
 export const guides: GuideSeo[] = [
@@ -205,6 +206,91 @@ export const guides: GuideSeo[] = [
       { question: "Yiwu est-il moins cher qu'Alibaba ?", answer: "Pas toujours. Le prix dépend du produit, du volume, du fournisseur et du transport." },
       { question: "Peut-on utiliser les deux ?", answer: "Oui. Comparer Alibaba et des contacts Yiwu permet souvent d'avoir une meilleure vision du marché." },
     ],
+  },
+  {
+    slug: "importer-de-yiwu",
+    title: "Importer de Yiwu : étapes, fournisseurs, transport et pièges",
+    description: "Guide pratique pour importer de Yiwu : trouver un fournisseur, vérifier les contacts, organiser le transport et éviter les erreurs courantes.",
+    h1: "Comment importer de Yiwu ?",
+    intro: "Yiwu abrite le plus grand marché de gros de petites marchandises au monde : des dizaines de milliers de stands répartis en districts, couvrant les jouets, les accessoires, la maison, la papeterie, le textile ou l'électronique. Importer de Yiwu vers la France ou l'Europe est accessible même à une petite structure, à condition de suivre une méthode : définir le produit, identifier les bons fournisseurs, vérifier les interlocuteurs, cadrer les prix et le MOQ, puis organiser un transport adapté au volume. Ce guide détaille chaque étape, avec les pièges classiques à éviter pour ne pas transformer une bonne opportunité en mauvaise surprise.",
+    sections: [
+      { heading: "Étape 1 : définir le produit à sourcer", body: [
+        "Avant même de chercher un fournisseur, verrouillez le produit : à qui vous le vendez, à quel prix, avec quelle marge cible. Fixez un coût rendu maximum (produit + transport + droits + TVA import + emballage) au-delà duquel l'opération n'est plus rentable.",
+        "Précisez ensuite les caractéristiques indispensables : matière, dimensions, coloris, packaging, normes applicables (jouets, produits en contact avec la peau, électronique…). Plus votre cahier des charges est clair, plus les échanges avec les fournisseurs de Yiwu seront rapides et fiables.",
+        "Enfin, restez réaliste sur le volume de départ. Un premier import raisonnable permet de tester la qualité, la logistique et la demande réelle avant d'engager un budget important."
+      ] },
+      { heading: "Étape 2 : trouver des fournisseurs à Yiwu", body: [
+        "Le marché de Yiwu (Yiwu International Trade City) est organisé en districts spécialisés. Sur place, on avance stand par stand ; à distance, la difficulté est d'obtenir des contacts directs fiables sans intermédiaires opaques.",
+        "C'est précisément le rôle d'un annuaire spécialisé comme Yiwu Index : parcourir des fournisseurs classés par catégorie, comparer les gammes de produits, puis débloquer les coordonnées directes (WeChat, e-mail, téléphone, numéro de stand) pour les contacter sans détour.",
+        "Contactez toujours plusieurs fournisseurs pour un même produit. Comparer trois à cinq réponses vous donne immédiatement une fourchette de prix crédible, une idée des MOQ pratiqués et un aperçu du sérieux de chacun."
+      ] },
+      { heading: "Étape 3 : vérifier le fournisseur", body: [
+        "À distance, la vérification repose sur des signaux concrets : réponses précises et cohérentes, photos et vidéos réelles du produit et du stand, licence commerciale communiquée sans réticence, conditions écrites claires.",
+        "Un stand localisé au marché de Yiwu est un premier repère utile — c'est le sens du badge « Stand localisé » sur Yiwu Index — mais ce n'est pas une garantie de qualité produit. Complétez toujours par un échantillon et, pour les commandes importantes, par une inspection avant expédition.",
+        "Méfiez-vous des prix anormalement bas, des demandes de paiement intégral immédiat vers des comptes personnels, et des interlocuteurs qui changent de conditions en cours de discussion."
+      ] },
+      { heading: "Étape 4 : demander échantillons, prix et MOQ", body: [
+        "L'échantillon est non négociable avant toute commande sérieuse. Il permet de juger la qualité réelle, les finitions, le packaging et la conformité à votre cahier des charges. Conservez photos et mesures pour comparer avec la production finale.",
+        "Négociez ensuite le trio prix / MOQ / délai. À Yiwu, les MOQ sont souvent plus accessibles que chez les usines classiques, ce qui permet de composer un premier conteneur ou groupage avec plusieurs références.",
+        "Faites tout confirmer par écrit : prix unitaire, devise, incoterm (EXW, FOB…), délai de production, conditions de paiement (acompte/solde) et emballage. Un fournisseur sérieux n'a aucun problème à formaliser."
+      ] },
+      { heading: "Étape 5 : organiser le transport", body: [
+        "Depuis Yiwu, trois grandes options : l'express (rapide, adapté aux petits colis et échantillons), l'aérien (délai court, coût au kilo élevé) et le maritime (le plus économique dès que le volume dépasse ~1 à 2 m³, en groupage LCL ou conteneur complet).",
+        "Le rail Chine–Europe constitue parfois un compromis intéressant entre délai et coût. Dans tous les cas, comparez les offres en coût rendu, dédouanement inclus, et clarifiez qui gère la déclaration en douane et la TVA à l'import.",
+        "Anticipez les pics saisonniers (avant le Nouvel An chinois notamment) : les délais s'allongent et les tarifs montent. Prévoyez de la marge dans votre planning de réassort."
+      ] },
+      { heading: "Erreurs fréquentes à éviter", body: [
+        "Commander sans échantillon, sous-estimer le coût rendu (droits et TVA import oubliés), payer 100 % à la commande, ou se fier uniquement à des photos retouchées : ce sont les quatre erreurs qui coûtent le plus cher aux nouveaux importateurs.",
+        "Ajoutez-y le manque de traçabilité des échanges (tout doit être écrit), l'absence de contrôle qualité avant expédition sur les volumes importants, et le choix d'un mode de transport inadapté au ratio poids/volume du produit.",
+        "En résumé : petit volume test, fournisseurs comparés, échantillons validés, conditions écrites, transport dimensionné. Cette discipline simple élimine l'essentiel des mauvaises surprises."
+      ] },
+    ],
+    faq: [
+      { question: "Faut-il aller sur place pour importer de Yiwu ?", answer: "Non. Avec des contacts directs fiables, des échantillons et un partenaire logistique, tout peut se faire à distance. Se déplacer reste utile pour les gros volumes ou les gammes complexes." },
+      { question: "Quel budget pour un premier import depuis Yiwu ?", answer: "Cela dépend du produit, mais un premier test cohérent se situe souvent entre quelques centaines et quelques milliers d'euros, transport et taxes inclus. L'essentiel est de calculer le coût rendu avant de commander." },
+      { question: "Quels sont les délais moyens ?", answer: "Comptez la production (souvent 1 à 4 semaines selon le produit) plus le transport : quelques jours en express ou aérien, 4 à 7 semaines environ en maritime vers l'Europe." },
+    ],
+    related: [["Organiser mon transport", "/transport"]],
+  },
+  {
+    slug: "societe-import-export-yiwu",
+    title: "Société import export à Yiwu : choisir le bon partenaire",
+    description: "Découvrez comment choisir une société import export à Yiwu, vérifier un partenaire et utiliser Yiwu Index pour trouver des fournisseurs chinois.",
+    h1: "Société import export à Yiwu : comment choisir ?",
+    intro: "Autour du marché de Yiwu gravite tout un écosystème de sociétés d'import-export, d'agents de sourcing et de bureaux d'achat. Leur promesse : vous accompagner pour trouver les produits, consolider les commandes de plusieurs stands, contrôler la qualité et expédier vers la France ou l'Europe. Certaines apportent une vraie valeur ; d'autres empilent les commissions sans transparence. Ce guide explique le rôle réel de ces partenaires, la différence entre fournisseur, agent et société d'import-export, les points à vérifier avant de signer, et la façon dont un annuaire de contacts directs comme Yiwu Index complète — ou remplace — ce type d'intermédiaire.",
+    sections: [
+      { heading: "Le rôle d'une société import export à Yiwu", body: [
+        "Une société d'import-export basée à Yiwu sert d'interface entre vous et le marché : repérage des produits, négociation en chinois, regroupement des achats effectués auprès de plusieurs stands, contrôle qualité basique, consolidation en entrepôt, puis organisation du transport et des formalités export.",
+        "Pour un importateur qui ne parle pas chinois, qui achète de petites quantités auprès de nombreux stands ou qui veut un point de contact unique, ce service a une vraie utilité : il transforme des dizaines de micro-commandes en une seule expédition gérée.",
+        "La contrepartie est le coût : commission sur les achats (souvent 3 à 10 %), frais d'entrepôt et marges éventuelles sur le transport. Ce coût doit être connu, écrit et intégré à votre calcul de rentabilité."
+      ] },
+      { heading: "Différence entre fournisseur, agent et société import export", body: [
+        "Le fournisseur (le stand ou l'usine) fabrique ou distribue le produit : c'est lui qui fixe le prix de base, le MOQ et le délai. Traiter en direct avec lui donne le meilleur prix, mais suppose d'avoir son contact et de gérer soi-même la coordination.",
+        "L'agent de sourcing travaille pour vous, généralement à la commission : il cherche les produits, négocie, suit la production et vous représente sur place. Sa valeur dépend entièrement de sa transparence — un bon agent vous communique les vrais prix fournisseurs.",
+        "La société d'import-export, elle, achète et revend souvent en son nom : votre contrat est avec elle, pas avec le stand. C'est plus simple administrativement, mais vous connaissez rarement le prix d'origine et vous dépendez de sa sélection de fournisseurs."
+      ] },
+      { heading: "Points à vérifier avant de travailler avec un partenaire", body: [
+        "Exigez la transparence sur la rémunération : commission exacte, frais d'entrepôt, marge transport. Un partenaire fiable détaille ses coûts ; un partenaire flou les dilue dans des prix produits gonflés.",
+        "Vérifiez l'existence légale (licence commerciale chinoise, ancienneté, adresse réelle à Yiwu), demandez des références clients en Europe, et testez la réactivité et la précision des réponses sur un petit dossier avant de confier un volume important.",
+        "Cadrez le contrôle qualité : que vérifie-t-il exactement avant expédition (quantités, références, état, photos) ? Qui est responsable en cas d'erreur ? Un rapport de contrôle photo avant chargement devrait être un standard."
+      ] },
+      { heading: "Risques fréquents", body: [
+        "Le risque principal est l'opacité tarifaire : commissions cachées dans les prix produits, doubles marges sur le transport, frais d'entrepôt qui gonflent. Sans prix d'origine, impossible de savoir ce que vous payez réellement.",
+        "Autres risques classiques : dépendance totale à un intermédiaire unique (si la relation se dégrade, vous perdez vos fournisseurs), contrôle qualité superficiel, et responsabilités mal définies en cas de produits non conformes ou manquants.",
+        "Enfin, méfiez-vous des « agents » improvisés rencontrés sur les réseaux sociaux, sans structure légale vérifiable, qui demandent des paiements sur des comptes personnels. C'est le profil type des arnaques au sourcing."
+      ] },
+      { heading: "Comment Yiwu Index peut compléter votre recherche", body: [
+        "Yiwu Index vous redonne l'accès direct : un annuaire de plus de 1 500 fournisseurs du marché de Yiwu, classés par catégorie, avec les coordonnées directes (WeChat, e-mail, téléphone, numéro de stand) débloquées selon votre abonnement.",
+        "Concrètement, vous pouvez soit traiter en direct avec les stands et ne mobiliser un prestataire que pour la consolidation et le transport, soit utiliser les contacts directs pour vérifier les prix qu'un intermédiaire vous propose — un excellent test de transparence.",
+        "Cette approche hybride — contacts directs pour le sourcing, partenaire logistique pour l'expédition — combine le meilleur prix produit et la simplicité opérationnelle, tout en gardant votre carnet de fournisseurs sous votre contrôle."
+      ] },
+    ],
+    faq: [
+      { question: "Une société import export est-elle obligatoire pour acheter à Yiwu ?", answer: "Non. Avec les contacts directs des fournisseurs et un transitaire pour la logistique, vous pouvez acheter sans intermédiaire d'achat. L'intermédiaire devient utile surtout pour consolider de nombreux petits achats." },
+      { question: "Quelle commission demande un agent à Yiwu ?", answer: "Généralement entre 3 % et 10 % du montant des achats, selon le volume et les services inclus. L'important est que cette commission soit explicite et contractuelle." },
+      { question: "Comment tester un partenaire avant de s'engager ?", answer: "Confiez-lui un petit dossier : quelques références, un budget limité. Jugez la transparence des prix, la qualité du contrôle avant expédition et le respect des délais avant d'augmenter les volumes." },
+    ],
+    related: [["Guide : importer de Yiwu", "/guides/importer-de-yiwu"]],
   },
 ];
 

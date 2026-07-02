@@ -86,6 +86,9 @@ export default function GuidePage({ params }: { params: { slug: string } }) {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <Link className="btn gold" href="/fournisseurs">Voir les fournisseurs</Link>
             <Link className="btn ghost" href="/tarifs" style={{ background: "rgba(255,255,255,.08)", color: "#fff" }}>Voir les tarifs</Link>
+            {(guide.related ?? []).map(([label, href]) => (
+              <Link key={href} className="btn ghost" href={href} style={{ background: "rgba(255,255,255,.08)", color: "#fff" }}>{label}</Link>
+            ))}
           </div>
         </div>
 
