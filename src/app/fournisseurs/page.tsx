@@ -24,7 +24,10 @@ export default function FournisseursPage() {
   const [account, setAccount] = useState<Account>({ isPaid: false, unlimited: false, remaining: null, limit: null });
   const [unlocking, setUnlocking] = useState<Set<string>>(new Set());
   const [detail, setDetail] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // Start in loading state: never show "0 fournisseur" before the first fetch
+  // has actually completed (direct hits render this initial state).
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const qDebounce = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
@@ -46,21 +49,41 @@ export default function FournisseursPage() {
 
   const load = useCallback(async (reset: boolean) => {
     setLoading(true);
+    setError(false);
     const skip = reset ? 0 : items.length;
     const params = new URLSearchParams({ take: String(PAGE), skip: String(skip) });
     if (query.trim()) params.set("q", query.trim());
     if (cat) params.set("category", cat);
-    try {
-      const r = await fetch(`/api/suppliers?${params.toString()}`, { cache: "no-store" });
-      const j = await r.json();
-      const next: SupplierListItem[] = j.items || [];
-      setTotal(j.total || 0);
-      if (j.account) setAccount(j.account);
-      setItems((prev) => (reset ? next : [...prev, ...next]));
-    } catch {
-      if (reset) { setItems([]); setTotal(0); }
-    } finally {
-      setLoading(false);
+
+    // Direct hits can land on a cold serverless function / cold database: the very
+    // first request may fail or time out. Retry up to 3 attempts before giving up,
+    // so a hard refresh on /fournisseurs reliably ends up with data.
+    const MAX_TRIES = 3;
+    for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+      try {
+        const r = await fetch(`/api/suppliers?${params.toString()}`, { cache: "no-store" });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = await r.json();
+        const next: SupplierListItem[] = j.items || [];
+        // An empty payload with no total on the first attempts is suspicious
+        // (cold DB returning the safe fallback) — retry instead of showing 0.
+        if (reset && next.length === 0 && !j.total && attempt < MAX_TRIES && !query.trim() && !cat) {
+          throw new Error("empty_first_page");
+        }
+        setTotal(j.total || 0);
+        if (j.account) setAccount(j.account);
+        setItems((prev) => (reset ? next : [...prev, ...next]));
+        setLoading(false);
+        return;
+      } catch {
+        if (attempt < MAX_TRIES) {
+          await new Promise((res) => setTimeout(res, attempt * 800));
+          continue;
+        }
+        if (reset) { setItems([]); setTotal(0); }
+        setError(true);
+        setLoading(false);
+      }
     }
   }, [items.length, query, cat]);
 
@@ -180,11 +203,24 @@ export default function FournisseursPage() {
 
       <div className="wrap">
         <div className="count">
-          {loading && items.length === 0 ? "Chargement…" : `${(favOnly ? view.length : total).toLocaleString("fr-FR")} fournisseur${(favOnly ? view.length : total) > 1 ? "s" : ""}`}
+          {loading && items.length === 0
+            ? "Chargement…"
+            : error && items.length === 0
+              ? "Connexion à l'annuaire…"
+              : `${(favOnly ? view.length : total).toLocaleString("fr-FR")} fournisseur${(favOnly ? view.length : total) > 1 ? "s" : ""}`}
           {cat ? ` · ${cat}` : ""}
         </div>
         <div className="grid">
-          {view.length === 0 && !loading ? (
+          {loading && items.length === 0 ? (
+            <p style={{ gridColumn: "1/-1", color: "var(--slate)", padding: 40, textAlign: "center" }}>
+              Chargement des fournisseurs…
+            </p>
+          ) : error && items.length === 0 ? (
+            <div style={{ gridColumn: "1/-1", color: "var(--slate)", padding: 40, textAlign: "center" }}>
+              <p style={{ marginBottom: 14 }}>Le chargement a pris trop de temps. Vérifiez votre connexion puis réessayez.</p>
+              <button className="btn primary" onClick={() => load(true)}>Réessayer</button>
+            </div>
+          ) : view.length === 0 && !loading ? (
             <p style={{ gridColumn: "1/-1", color: "var(--slate)", padding: 40, textAlign: "center" }}>
               {favOnly ? "Aucun favori pour l'instant. Touchez le ♡ sur une fiche." : "Aucun résultat. Élargissez la recherche."}
             </p>
