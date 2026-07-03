@@ -172,20 +172,22 @@ export function SupplierDrawer({ code, onClose, onUnlocked }: { code: string | n
               </div>
               <div className="dr-sec">
                 <h4>Contacts directs</h4>
-                <div className={"contacts" + (d.locked ? " locked" : "")}
+                <div className={"contacts" + (d.locked ? " locked" : " dr-contacts-open")}
                   style={{ border: "1px solid var(--line)", borderRadius: 12, padding: 14, background: "var(--surface)" }}>
+                  {!d.locked && <span className="chip-unlocked">Contact débloqué</span>}
                   {d.locked ? <LockedContacts ch={d.channels} /> : (d.contacts ? <RealContacts c={d.contacts} /> : null)}
                   {d.locked && (
                     <div className="lockover" style={{ borderRadius: 12 }}>
-                      <div className="lk">🔒 {d.cta || "Réservé au Premium"}</div>
+                      <div className="lk">🔒 Débloquez les contacts directs pour contacter ce fournisseur</div>
+                      <div className="lk-benefit">WeChat · e-mail · téléphone · n° de stand</div>
                       {typeof d.remainingUnlocks === "number" && (
                         <div className="note" style={{ marginTop: -4 }}>{d.remainingUnlocks} déblocage(s) restant(s) ce mois-ci</div>
                       )}
                       {error && <div className="note" style={{ color: "var(--seal)", maxWidth: 260 }}>{error}</div>}
-                      <button className="btn primary" onClick={unlock} disabled={unlocking} style={{ padding: "6px 14px", fontSize: 12 }}>
+                      <button className="btn primary" onClick={unlock} disabled={unlocking} style={{ padding: "7px 16px", fontSize: 12 }}>
                         {unlocking ? "Déblocage…" : d.authenticated ? "Débloquer cette fiche" : "Se connecter"}
                       </button>
-                      {d.authenticated && <button className="btn ghost" onClick={() => router.push("/tarifs")} style={{ padding: "6px 14px", fontSize: 12 }}>Voir les offres</button>}
+                      <button className="btn ghost" onClick={() => router.push("/tarifs")} style={{ padding: "6px 14px", fontSize: 12 }}>Voir les offres</button>
                     </div>
                   )}
                 </div>
