@@ -7,42 +7,31 @@ export default function Home() {
     <section>
       <div className="hero"><div className="wrap heroflex">
         <div>
-          <p className="eyebrow">Annuaire sourcing · Marché de Yiwu</p>
-          <h1 className="serif">Trouvez vos fournisseurs chinois <em>en quelques clics.</em></h1>
-          <p className="lead">1&nbsp;540 profils fournisseurs du marché de Yiwu, organisés par catégorie — avec les contacts directs (WeChat, e-mail, téléphone, n° de stand) accessibles selon votre offre. Explorez gratuitement, débloquez quand vous êtes prêt.</p>
+          <p className="eyebrow">Sourcing · Marché de Yiwu</p>
+          <h1 className="serif">Importez depuis Yiwu <em>sans perdre d&apos;argent.</em></h1>
+          <p className="lead">Accédez aux meilleurs fournisseurs vérifiés, à leurs coordonnées directes et à notre guide complet d&apos;importation — pensé pour les entrepreneurs francophones.</p>
           <div className="cta-row">
             <Link className="btn primary lg" href="/fournisseurs">Voir les fournisseurs</Link>
-            <Link className="btn gold lg" href="/tarifs">Débloquer les contacts</Link>
+            <Link className="btn ghost lg" href="/tarifs">Devenir Premium</Link>
           </div>
           <div className="stats">
-            <div className="stat"><b>1&nbsp;540</b><span>Fournisseurs référencés</span></div>
+            <div className="stat"><b>1&nbsp;540</b><span>Fournisseurs</span></div>
             <div className="stat"><b>14</b><span>Catégories</span></div>
-            <div className="stat"><b>WeChat · mail · tél</b><span>Contacts directs</span></div>
-            <div className="stat"><b>10 → ∞</b><span>Déblocages / mois selon l&apos;offre</span></div>
+            <div className="stat"><b>1&nbsp;540</b><span>Contacts directs</span></div>
+            <div className="stat"><b>1000+</b><span>Produits référencés</span></div>
           </div>
         </div>
         <HeroPreview />
       </div></div>
 
       <div className="section wrap">
-        <p className="eyebrow">Comment ça marche</p>
-        <h2 className="serif" style={{ fontSize: 30, marginBottom: 8 }}>Du profil au contact direct, en 3 étapes.</h2>
-        <p className="lead" style={{ marginBottom: 26 }}>Pas de commission, pas d&apos;intermédiaire : vous gardez votre carnet de fournisseurs.</p>
-        <div className="how3">
-          <div className="hstep"><b>Explorez les profils fournisseurs</b><p>Parcourez gratuitement l&apos;annuaire : nom, catégorie, produits phares, district du marché. Sans carte bancaire.</p></div>
-          <div className="hstep"><b>Comparez les produits et catégories</b><p>Filtrez par catégorie, recherchez par mot-clé, sauvegardez vos favoris pour présélectionner les stands qui correspondent à votre projet.</p></div>
-          <div className="hstep"><b>Débloquez les contacts directs</b><p>WeChat, e-mail, téléphone et n° de stand — débloqués selon votre offre, pour contacter le fournisseur sans intermédiaire.</p></div>
-        </div>
-      </div>
-
-      <div className="section wrap" style={{ paddingTop: 0 }}>
         <p className="eyebrow">Pourquoi Yiwu Index</p>
         <h2 className="serif" style={{ fontSize: 30, marginBottom: 8 }}>On a déjà fait les erreurs, pas vous.</h2>
-        <p className="lead" style={{ marginBottom: 30 }}>Une plateforme d&apos;aide au sourcing, pas une place de marché. On ne vend pas les produits — on vous donne les bonnes informations.</p>
+        <p className="lead" style={{ marginBottom: 30 }}>Une plateforme d&apos;intelligence, pas une place de marché. On ne vend pas les produits — on vous donne les bonnes informations.</p>
         <div className="cards3">
-          <div className="feat"><div className="ic" style={{ background: "var(--jade-soft)", color: "var(--jade)" }}>🗂️</div><h3>Profils fournisseurs organisés</h3><p>Un annuaire structuré du marché de Yiwu : catégories, produits phares, district — et le badge « Stand localisé » quand le stand a été repéré au marché.</p></div>
-          <div className="feat"><div className="ic" style={{ background: "var(--seal-soft)", color: "var(--seal)" }}>💬</div><h3>Contacts directs</h3><p>WeChat, e-mail, téléphone et adresse du stand, accessibles selon votre offre. Pas d&apos;intermédiaire opaque, pas de commission sur vos achats.</p></div>
-          <div className="feat"><div className="ic" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>🎓</div><h3>Académie d&apos;importation</h3><p>De la négociation aux douanes : les modules et guides pour importer de A à Z sans vous faire avoir — en accès libre.</p></div>
+          <div className="feat"><div className="ic" style={{ background: "var(--jade-soft)", color: "var(--jade)" }}>✓</div><h3>Fournisseurs vérifiés</h3><p>Chaque fournisseur est recherché à la main : stand localisé au marché de Yiwu, coordonnées directes confirmées.</p></div>
+          <div className="feat"><div className="ic" style={{ background: "var(--seal-soft)", color: "var(--seal)" }}>💬</div><h3>Contacts directs</h3><p>WeChat, e-mail, téléphone et adresse exacte du stand : les coordonnées directes du fournisseur, débloquées d&apos;un seul coup. Pas d&apos;intermédiaire opaque.</p></div>
+          <div className="feat"><div className="ic" style={{ background: "var(--gold-soft)", color: "var(--gold)" }}>🎓</div><h3>Académie d&apos;importation</h3><p>De la négociation aux douanes : 12 modules pour importer de A à Z sans vous faire avoir.</p></div>
         </div>
       </div>
 
@@ -78,7 +67,7 @@ export default function Home() {
       <div className="section wrap" style={{ paddingTop: 0 }}>
         <p className="eyebrow">Aperçu premium</p>
         <h2 className="serif" style={{ fontSize: 26, marginBottom: 8 }}>Les coordonnées directes sont réservées aux membres.</h2>
-        <p className="lead" style={{ marginBottom: 24 }}>Voici une fiche telle qu&apos;un visiteur la voit : profil complet, contacts masqués. Avec un abonnement, les coordonnées s&apos;affichent directement sur la carte.</p>
+        <p className="lead" style={{ marginBottom: 24 }}>En visiteur, les coordonnées sont masquées. Activez l&apos;aperçu « Premium » en haut à droite pour voir le déverrouillage.</p>
         <Teaser />
       </div>
 
@@ -93,23 +82,10 @@ export default function Home() {
       </div>
 
       <div className="section wrap" style={{ paddingTop: 0 }}>
-        <p className="eyebrow">Confiance</p>
-        <div className="trustband">
-          <div className="titem"><div className="ic">🔒</div><div><b>Paiement sécurisé</b><span>Transactions opérées par Stripe. Vos données bancaires ne transitent jamais par nos serveurs.</span></div></div>
-          <div className="titem"><div className="ic">↩︎</div><div><b>Annulable à tout moment</b><span>Résiliez en deux clics depuis votre compte. L&apos;accès reste actif jusqu&apos;à la fin de la période payée.</span></div></div>
-          <div className="titem"><div className="ic">✉️</div><div><b>Support par e-mail</b><span>Une question ? Écrivez-nous, on répond — support prioritaire pour les membres Pro.</span></div></div>
-          <div className="titem"><div className="ic">🧭</div><div><b>Dédié au sourcing Chine</b><span>Une plateforme spécialisée sur le marché de Yiwu, pensée pour les importateurs francophones.</span></div></div>
-        </div>
-      </div>
-
-      <div className="section wrap" style={{ paddingTop: 0 }}>
         <div style={{ background: "var(--ink)", borderRadius: 22, padding: 46, textAlign: "center", color: "#fff" }}>
           <h2 className="serif" style={{ fontSize: 30, color: "#fff", marginBottom: 10 }}>Prêt à sourcer sereinement ?</h2>
-          <p style={{ color: "#cfcabf", maxWidth: "52ch", margin: "0 auto 22px" }}>Explorez les 1&nbsp;540 profils gratuitement — et débloquez les coordonnées directes quand vous avez trouvé les bons stands.</p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link className="btn gold lg" href="/tarifs">Débloquer les contacts</Link>
-            <Link className="btn ghost lg" href="/fournisseurs" style={{ background: "rgba(255,255,255,.08)", color: "#fff", borderColor: "rgba(255,255,255,.2)" }}>Explorer gratuitement</Link>
-          </div>
+          <p style={{ color: "#cfcabf", maxWidth: "50ch", margin: "0 auto 22px" }}>Débloquez les 1&nbsp;500+ fournisseurs, leurs coordonnées directes et l&apos;académie complète.</p>
+          <Link className="btn gold lg" href="/tarifs">Voir les tarifs</Link>
         </div>
       </div>
     </section>

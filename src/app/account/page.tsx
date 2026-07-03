@@ -61,48 +61,14 @@ export default async function Account({ searchParams }: { searchParams: { checko
         </div>
       )}
 
-      <div className="acct-card" style={{ marginTop: 20 }}>
-        <div className="acct-head">
-          <div className="acct-av">{(user.name || user.email || "?").trim().charAt(0).toUpperCase()}</div>
-          <div>
-            <b>{user.name || "Non renseigné"}</b>
-            <small>{user.email}</small>
-          </div>
-          <span className={`plan-pill ${user.role}`}>{roleLabel[user.role] || user.role}</span>
-        </div>
-
-        <div className="acct-rows">
-          <div className="acct-row"><span>Statut</span><b>{roleLabel[user.role] || user.role}</b></div>
-          <div className="acct-row"><span>Déblocages ce mois-ci</span><b>{unlimited ? "Illimité" : `${used} / ${limit}`}</b></div>
-          {validPremiumUntil && <div className="acct-row"><span>Accès actif jusqu&apos;au</span><b>{validPremiumUntil.toLocaleDateString("fr-FR")}</b></div>}
-          {user.subscription?.status && <div className="acct-row"><span>Abonnement Stripe</span><b>{user.subscription.status}</b></div>}
-        </div>
-
-        <div className="acct-access">
-          <h3>Votre accès</h3>
-          {isPaid ? (
-            <>
-              <p>✓ Contacts directs des fournisseurs <b>visibles</b> (WeChat, e-mail, téléphone, n° de stand).</p>
-              {unlimited ? (
-                <p>✓ Déblocages <b>illimités</b> — toutes les coordonnées sont accessibles.</p>
-              ) : (
-                <>
-                  <p>Il vous reste <b>{Math.max((limit as number) - used, 0)}</b> déblocage{Math.max((limit as number) - used, 0) > 1 ? "s" : ""} ce mois-ci.</p>
-                  <div className="quota-bar"><i style={{ width: `${Math.min((used / (limit as number)) * 100, 100)}%` }} /></div>
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              <p>Les contacts directs sont réservés aux offres payantes. Vous explorez actuellement l&apos;annuaire en accès libre.</p>
-              <p style={{ marginTop: 8 }}><a className="btn gold" href="/tarifs" style={{ padding: "8px 18px", fontSize: 13 }}>Débloquer les contacts</a></p>
-            </>
-          )}
-        </div>
-
-        <div className="acct-actions">
-          <AccountActions hasCustomer={!!user.stripeCustomerId} />
-        </div>
+      <div className="panelbox" style={{ marginTop: 20 }}>
+        <p><b>Nom :</b> {user.name || "Non renseigné"}</p>
+        <p><b>Email :</b> {user.email}</p>
+        <p><b>Statut :</b> {roleLabel[user.role] || user.role}</p>
+        <p><b>Déblocages ce mois-ci :</b> {unlimited ? "Illimité" : `${used} / ${limit}`}</p>
+        {validPremiumUntil && <p><b>Accès actif jusqu'au :</b> {validPremiumUntil.toLocaleDateString("fr-FR")}</p>}
+        {user.subscription?.status && <p><b>Abonnement Stripe :</b> {user.subscription.status}</p>}
+        <AccountActions hasCustomer={!!user.stripeCustomerId} />
       </div>
     </main>
   );

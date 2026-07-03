@@ -75,8 +75,10 @@ export function SupplierCard({
 
         {/* ——— Contacts block: 3 states ——— */}
         {isUnlocked ? (
-          <div className="contacts unlocked">
-            <span className="chip-unlocked">Contact débloqué</span>
+          <div className="contacts">
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, color: "var(--jade)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 }}>
+              <span>✓</span> Contact débloqué
+            </div>
             <RevealedContacts c={d.contacts!} />
           </div>
         ) : isPaid ? (
@@ -89,7 +91,7 @@ export function SupplierCard({
                   <button className="btn ghost" data-go="pricing" style={{ padding: "6px 14px", fontSize: 12 }}>Voir les offres</button>
                 </>
               ) : (
-                <button className="btn primary" onClick={() => onUnlock(d.code)} disabled={!!unlocking} style={{ padding: "7px 18px", fontSize: 12.5 }}>
+                <button className="btn primary" onClick={() => onUnlock(d.code)} disabled={!!unlocking} style={{ padding: "6px 16px", fontSize: 12.5 }}>
                   {unlocking ? "Déblocage…" : "🔓 Débloquer ce contact"}
                 </button>
               )}
@@ -99,9 +101,8 @@ export function SupplierCard({
           <div className="contacts locked">
             <MaskedRows />
             <div className="lockover">
-              <div className="lk">🔒 Contacts directs disponibles</div>
-              <div className="lk-benefit">WeChat · e-mail · téléphone · n° de stand</div>
-              <button className="btn primary" data-go="pricing" style={{ padding: "7px 16px", fontSize: 12 }}>Devenir Premium</button>
+              <div className="lk">🔒 Contacts réservés au Premium</div>
+              <button className="btn primary" data-go="pricing" style={{ padding: "6px 14px", fontSize: 12 }}>Devenir Premium</button>
             </div>
           </div>
         )}

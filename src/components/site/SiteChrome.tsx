@@ -102,9 +102,9 @@ export function SiteChrome() {
       <div className="launch-banner">
         <div className="wrap launch-banner-inner">
           <span className="launch-kicker">Offre de lancement</span>
-          <span><b>-25% sur le premier mois</b> Premium/Pro avec <code>YIWU25</code></span>
+          <span><b>-50% sur le premier mois</b> Premium/Pro avec <code>YIWU50</code></span>
           <span className="launch-sep">•</span>
-          <span><b>-50€ sur Lifetime</b> avec <code>YIWULIFE50</code></span>
+          <span><b>-100€ sur Lifetime</b> avec <code>YIWULIFE100</code></span>
           <Link className="launch-link" href="/tarifs">Voir les offres</Link>
         </div>
       </div>
