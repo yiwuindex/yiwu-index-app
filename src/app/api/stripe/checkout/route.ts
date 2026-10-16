@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       success_url: `${site}/account?checkout=success`,
       cancel_url: `${site}/tarifs?checkout=cancel`,
       metadata,
-      allow_promotion_codes: true,
+      allow_promotion_codes: false,
       ...(cfg.mode === "subscription" ? { subscription_data: { metadata } } : {}),
     });
 
